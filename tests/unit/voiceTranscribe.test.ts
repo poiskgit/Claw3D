@@ -2,12 +2,15 @@
  * Tests for the voice transcription API route — focusing on the upload size
  * limit that must be enforced BEFORE the request body is buffered into memory
  * (issue #7 fix).
+ *
+ * Uses mock request objects instead of real Request/FormData to avoid
+ * vitest environment issues where Request.formData() hangs on Blob bodies.
  */
 
 import { describe, expect, it, vi, beforeEach } from "vitest";
 
 // ---------------------------------------------------------------------------
-// Module mocks — must be hoisted before the route import
+// Module mocks — must be hoisted before the route import.
 // ---------------------------------------------------------------------------
 
 vi.mock("@/lib/openclaw/voiceTranscription", () => ({
@@ -28,35 +31,37 @@ const { MAX_VOICE_UPLOAD_BYTES, POST } = await import(
   "@/app/api/office/voice/transcribe/route"
 );
 
-/** Build a minimal multipart/form-data Request with an audio file blob. */
-function buildAudioRequest(
-  fileSizeBytes: number,
-  options: { contentLengthOverride?: number | null } = {},
-): Request {
-  const audioBlob = new Blob([new Uint8Array(fileSizeBytes)], { type: "audio/webm" });
-  const formData = new FormData();
-  formData.append("audio", audioBlob, "voice.webm");
-
-  // Build headers
-  const headers: Record<string, string> = {};
-  if (options.contentLengthOverride !== undefined && options.contentLengthOverride !== null) {
-    headers["content-length"] = String(options.contentLengthOverride);
-  }
-
-  return new Request("http://localhost/api/office/voice/transcribe", {
-    method: "POST",
-    body: formData,
-    headers,
-  });
+/** Create a File-like object that passes the route's duck-typing check. */
+function makeAudioFile(byteLength: number) {
+  return {
+    arrayBuffer: () => Promise.resolve(new ArrayBuffer(byteLength)),
+    name: "voice.webm",
+    type: "audio/webm",
+  };
 }
 
-/** Build a Request with no audio field in the form. */
-function buildNoAudioRequest(): Request {
-  const formData = new FormData();
-  return new Request("http://localhost/api/office/voice/transcribe", {
-    method: "POST",
-    body: formData,
-  });
+/**
+ * Build a mock Request whose headers and formData are fully controlled,
+ * avoiding the real Request/Blob path that hangs in vitest.
+ */
+function mockRequest(opts: {
+  contentLength?: string;
+  audioFile?: ReturnType<typeof makeAudioFile> | null;
+}): Request {
+  const headersMap = new Map<string, string>();
+  if (opts.contentLength !== undefined) {
+    headersMap.set("content-length", opts.contentLength);
+  }
+
+  const audio = opts.audioFile ?? null;
+  const fakeFormData = {
+    get: (key: string) => (key === "audio" ? audio : null),
+  };
+
+  return {
+    headers: { get: (name: string) => headersMap.get(name) ?? null },
+    formData: () => Promise.resolve(fakeFormData),
+  } as unknown as Request;
 }
 
 // ---------------------------------------------------------------------------
@@ -68,22 +73,18 @@ describe("POST /api/office/voice/transcribe — size limit enforcement (issue #7
     vi.clearAllMocks();
   });
 
-  // ── Content-Length early rejection ────────────────────────────────────────
-
   // The early Content-Length check uses MAX_VOICE_UPLOAD_BYTES + 1024 as its
   // threshold because multipart/form-data requests include boundary/header
-  // overhead on top of the raw audio bytes. A request at exactly
-  // MAX_VOICE_UPLOAD_BYTES + 1 could still contain a valid audio file — the
-  // post-buffer check (which measures actual bytes) is the authoritative limit.
-  // The early check only rejects requests that are obviously too large.
+  // overhead on top of the raw audio bytes.
   const MULTIPART_OVERHEAD_ALLOWANCE = 1024;
 
-  it("returns 413 immediately when Content-Length clearly exceeds the limit + overhead allowance", async () => {
+  // ── Content-Length early rejection ────────────────────────────────────────
+
+  it("returns 413 immediately when Content-Length clearly exceeds the limit + overhead", async () => {
     const oversizeBytes = MAX_VOICE_UPLOAD_BYTES + MULTIPART_OVERHEAD_ALLOWANCE + 1;
-    const request = buildAudioRequest(1, {
-      // Lie about size — we want to confirm the header check fires even when
-      // the actual payload is small (verifying header-based early rejection).
-      contentLengthOverride: oversizeBytes,
+    const request = mockRequest({
+      contentLength: String(oversizeBytes),
+      audioFile: makeAudioFile(1),
     });
 
     const response = await POST(request);
@@ -94,52 +95,39 @@ describe("POST /api/office/voice/transcribe — size limit enforcement (issue #7
   });
 
   it("does NOT reject early when Content-Length is MAX + 1 (within multipart overhead allowance)", async () => {
-    // MAX_VOICE_UPLOAD_BYTES + 1 is within the multipart overhead window —
-    // the actual audio file may still be within the limit. The early check
-    // should pass; the post-buffer check is the authoritative limit.
-    const request = buildAudioRequest(1, {
-      contentLengthOverride: MAX_VOICE_UPLOAD_BYTES + 1,
+    const request = mockRequest({
+      contentLength: String(MAX_VOICE_UPLOAD_BYTES + 1),
+      audioFile: makeAudioFile(1),
     });
+
     const response = await POST(request);
-    // Should NOT return 413 from the early header check (body is 1 byte, fine).
     expect(response.status).not.toBe(413);
   });
 
   it("does NOT reject when Content-Length equals MAX_VOICE_UPLOAD_BYTES exactly", async () => {
-    // The actual body is tiny; we're testing the header path only here.
-    const request = buildAudioRequest(1, {
-      contentLengthOverride: MAX_VOICE_UPLOAD_BYTES,
+    const request = mockRequest({
+      contentLength: String(MAX_VOICE_UPLOAD_BYTES),
+      audioFile: makeAudioFile(1),
     });
+
     const response = await POST(request);
-    // Should not be a 413 from the header check (actual body is 1 byte, fine).
     expect(response.status).not.toBe(413);
   });
 
   // ── No Content-Length header — handled gracefully ─────────────────────────
 
   it("proceeds normally when Content-Length header is absent and file is within limit", async () => {
-    // Small valid audio; no content-length header at all.
-    const request = buildAudioRequest(1024 /* 1 KB */);
+    const request = mockRequest({ audioFile: makeAudioFile(1024) });
 
     const response = await POST(request);
-    // Should succeed (mocked transcription returns 200).
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.transcript).toBe("hello world");
   });
 
   it("returns 413 after buffering when Content-Length is absent but body exceeds limit", async () => {
-    // Build a real oversized body with no content-length header.
-    // We use MAX_VOICE_UPLOAD_BYTES + 1 bytes to trigger the post-buffer check.
-    const oversizeBytes = MAX_VOICE_UPLOAD_BYTES + 1;
-    const audioBlob = new Blob([new Uint8Array(oversizeBytes)], { type: "audio/webm" });
-    const formData = new FormData();
-    formData.append("audio", audioBlob, "big.webm");
-
-    const request = new Request("http://localhost/api/office/voice/transcribe", {
-      method: "POST",
-      body: formData,
-      // No content-length header — the post-buffer check must catch this.
+    const request = mockRequest({
+      audioFile: makeAudioFile(MAX_VOICE_UPLOAD_BYTES + 1),
     });
 
     const response = await POST(request);
@@ -151,9 +139,9 @@ describe("POST /api/office/voice/transcribe — size limit enforcement (issue #7
   // ── Normal happy path ─────────────────────────────────────────────────────
 
   it("returns 200 with transcript for a valid upload within the size limit", async () => {
-    const request = buildAudioRequest(4096 /* 4 KB */);
-    const response = await POST(request);
+    const request = mockRequest({ audioFile: makeAudioFile(4096) });
 
+    const response = await POST(request);
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body).toMatchObject({
@@ -166,14 +154,17 @@ describe("POST /api/office/voice/transcribe — size limit enforcement (issue #7
   // ── Edge cases ────────────────────────────────────────────────────────────
 
   it("returns 400 when no audio field is present in the form", async () => {
-    const response = await POST(buildNoAudioRequest());
+    const request = mockRequest({ audioFile: null });
+
+    const response = await POST(request);
     expect(response.status).toBe(400);
     const body = await response.json();
     expect(body.error).toMatch(/audio file is required/i);
   });
 
   it("returns 400 for an empty audio file (0 bytes)", async () => {
-    const request = buildAudioRequest(0);
+    const request = mockRequest({ audioFile: makeAudioFile(0) });
+
     const response = await POST(request);
     expect(response.status).toBe(400);
     const body = await response.json();
@@ -181,17 +172,11 @@ describe("POST /api/office/voice/transcribe — size limit enforcement (issue #7
   });
 
   it("ignores a malformed (non-numeric) Content-Length header and falls through", async () => {
-    const audioBlob = new Blob([new Uint8Array(512)], { type: "audio/webm" });
-    const formData = new FormData();
-    formData.append("audio", audioBlob, "voice.webm");
-
-    const request = new Request("http://localhost/api/office/voice/transcribe", {
-      method: "POST",
-      body: formData,
-      headers: { "content-length": "not-a-number" },
+    const request = mockRequest({
+      contentLength: "not-a-number",
+      audioFile: makeAudioFile(512),
     });
 
-    // Should NOT blow up; header is NaN so we skip the early check and proceed.
     const response = await POST(request);
     expect(response.status).toBe(200);
   });
