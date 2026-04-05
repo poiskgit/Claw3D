@@ -1,5 +1,7 @@
 "use client";
 
+import "@/lib/suppress-three-warnings";
+
 import {
   type ReactNode,
   useCallback,

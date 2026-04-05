@@ -129,6 +129,15 @@
   --command-copy-hover-bg: color-mix(in oklch, #243c52 78%, var(--surface-1));
   --command-copy-border: color-mix(in oklch, #3d6178 62%, transparent);
   --model-control-border: color-mix(in oklch, var(--action-bg) 34%, var(--sidebar-input-border));
+  --font-scale: 1;
+}
+
+html {
+  font-size: calc(100% * var(--font-scale));
+}
+
+html[lang="zh"] {
+  --font-scale: 1.04;
 }
 
 .dark {
@@ -1084,15 +1093,18 @@ textarea:focus::-webkit-scrollbar {
 }
 
 [lang="zh"] {
-  --tracking-normal: 0.02em; /* slightly more tracking for Chinese */
+  --tracking-normal: 0.02em;
 }
 
-/* Chinese Typography Scale Up */
+/* ── Chinese Typography Scale Up ── */
 [lang="zh"] .text-\[10px\] {
   font-size: 11px;
 }
 [lang="zh"] .text-\[11px\] {
   font-size: 12px;
+}
+[lang="zh"] .text-\[12px\] {
+  font-size: 13px;
 }
 [lang="zh"] .text-xs {
   font-size: 0.8125rem; /* 13px */
@@ -1104,6 +1116,39 @@ textarea:focus::-webkit-scrollbar {
 }
 [lang="zh"] .text-base {
   font-size: 1.0625rem; /* 17px */
+}
+
+/* Chinese: suppress uppercase on CJK glyphs and tighten excessive letter-spacing */
+[lang="zh"] .uppercase {
+  text-transform: none;
+}
+[lang="zh"] .tracking-\[0\.22em\],
+[lang="zh"] .tracking-\[0\.18em\],
+[lang="zh"] .tracking-\[0\.16em\],
+[lang="zh"] .tracking-\[0\.14em\],
+[lang="zh"] .tracking-\[0\.12em\],
+[lang="zh"] .tracking-\[0\.11em\] {
+  letter-spacing: 0.04em;
+}
+[lang="zh"] .tracking-\[0\.06em\],
+[lang="zh"] .tracking-\[0\.05em\],
+[lang="zh"] .tracking-\[0\.04em\],
+[lang="zh"] .tracking-\[0\.03em\] {
+  letter-spacing: 0.02em;
+}
+
+/* Chinese: typography tokens scale */
+[lang="zh"] .type-meta {
+  font-size: 13px;
+}
+[lang="zh"] .type-body {
+  font-size: 15px;
+}
+[lang="zh"] .sidebar-copy {
+  font-size: 0.88rem;
+}
+[lang="zh"] .ui-badge {
+  font-size: 13px;
 }
 
 .agent-inspect-panel .text-\[10px\] {

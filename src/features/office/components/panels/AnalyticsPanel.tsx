@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useRef } from "react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 import { CalendarDays } from "lucide-react";
 
@@ -16,23 +17,23 @@ import {
 } from "@/lib/office/usageAnalyticsPresentation";
 import type { StudioSettingsCoordinator } from "@/lib/studio/coordinator";
 
-const formatPercent = (value: number | null | undefined) => {
-  if (value === null || value === undefined) return "n/a";
+const formatPercent = (value: number | null | undefined, t: any) => {
+  if (value === null || value === undefined) return t("common.notAvailable");
   return `${Math.round(value * 100)}%`;
 };
 
-const formatDuration = (valueMs: number | null | undefined) => {
-  if (!valueMs) return "n/a";
+const formatDuration = (valueMs: number | null | undefined, t: any) => {
+  if (!valueMs) return t("common.notAvailable");
   const seconds = Math.round(valueMs / 1000);
-  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 60) return `${seconds}${t("common.secondsAbbr")}`;
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
   if (minutes < 60) {
-    return remainingSeconds > 0 ? `${minutes}m ${remainingSeconds}s` : `${minutes}m`;
+    return remainingSeconds > 0 ? `${minutes}${t("common.minutesAbbr")} ${remainingSeconds}${t("common.secondsAbbr")}` : `${minutes}${t("common.minutesAbbr")}`;
   }
   const hours = Math.floor(minutes / 60);
   const remainingMinutes = minutes % 60;
-  return remainingMinutes > 0 ? `${hours}h ${remainingMinutes}m` : `${hours}h`;
+  return remainingMinutes > 0 ? `${hours}${t("common.hoursAbbr")} ${remainingMinutes}${t("common.minutesAbbr")}` : `${hours}${t("common.hoursAbbr")}`;
 };
 
 const formatBudgetInput = (value: number | null) => (value === null ? "" : String(value));
@@ -74,10 +75,12 @@ const DatePickerField = ({
   label,
   value,
   onChange,
+  t,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  t: any;
 }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -99,7 +102,7 @@ const DatePickerField = ({
           type="button"
           onClick={() => openNativeDatePicker(inputRef.current)}
           className="absolute inset-y-0 right-0 flex w-8 items-center justify-center text-white/40 transition-colors hover:text-cyan-200"
-          aria-label={`Open ${label.toLowerCase()} calendar`}
+          aria-label={t("analytics.openCalendarAriaLabel").replace("{0}", label.toLowerCase())}
         >
           <CalendarDays className="h-3.5 w-3.5" />
         </button>
@@ -143,6 +146,7 @@ export function AnalyticsPanel({
     gatewayUrl,
     settingsCoordinator,
   });
+  const { t } = useTranslation();
 
   const approvalMetrics = useApprovalMetrics({
     client,
@@ -169,31 +173,31 @@ export function AnalyticsPanel({
     <section className="flex h-full min-h-0 flex-col">
       <div className="border-b border-cyan-500/10 px-4 py-3">
         <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
-          Analytics
+          {t("analytics.title")}
         </div>
         <div className="mt-1 font-mono text-[11px] text-white/40">
-          Real usage, spend, and agent trust metrics for headquarters.
+          {t("analytics.description")}
         </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
         <div className="grid grid-cols-2 gap-2">
-          <DatePickerField label="Start" value={startDate} onChange={setStartDate} />
-          <DatePickerField label="End" value={endDate} onChange={setEndDate} />
+          <DatePickerField label={t("analytics.start")} value={startDate} onChange={setStartDate} t={t} />
+          <DatePickerField label={t("analytics.end")} value={endDate} onChange={setEndDate} t={t} />
         </div>
 
         <div className="mt-2 flex items-center justify-between gap-2">
           <div className="font-mono text-[10px] text-white/35">
             {usage.lastRefreshedAt
-              ? `Last refresh ${new Date(usage.lastRefreshedAt).toLocaleTimeString()}`
-              : "No analytics snapshot yet"}
+              ? `${t("analytics.lastRefresh")} ${new Date(usage.lastRefreshedAt).toLocaleTimeString()}`
+              : t("analytics.noSnapshot")}
           </div>
           <button
             type="button"
             onClick={() => void usage.refresh()}
             className="rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
           >
-            Refresh
+            {t("analytics.refresh")}
           </button>
         </div>
 
@@ -213,76 +217,76 @@ export function AnalyticsPanel({
           </div>
         ) : settingsLoaded ? (
           <div className="mt-3 rounded border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 font-mono text-[11px] text-emerald-100">
-            Budgets are within threshold.
+            {t("analytics.budgetThreshold")}
           </div>
         ) : null}
 
         <div className="mt-4 grid grid-cols-2 gap-2">
           <StatCard
-            label="Total Spend"
+            label={t("analytics.totals.spendLabel")}
             value={formatCurrency(usage.totals.totalCost)}
-            hint="Selected range."
+            hint={t("analytics.totals.spendHint")}
           />
           <StatCard
-            label="Total Tokens"
+            label={t("analytics.totals.tokensLabel")}
             value={formatNumber(usage.totals.totalTokens)}
-            hint="Input + output + cache."
+            hint={t("analytics.totals.tokensHint")}
           />
           <StatCard
-            label="Success Rate"
-            value={formatPercent(performance.fleet.successRate)}
-            hint="Completed runs only."
+            label={t("analytics.totals.successRateLabel")}
+            value={formatPercent(performance.fleet.successRate, t)}
+            hint={t("analytics.totals.successRateHint")}
           />
           <StatCard
-            label="Avg Runtime"
-            value={formatDuration(performance.fleet.avgRuntimeMs)}
-            hint="Session-local run history."
+            label={t("analytics.totals.runtimeLabel")}
+            value={formatDuration(performance.fleet.avgRuntimeMs, t)}
+            hint={t("analytics.totals.runtimeHint")}
           />
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Budget Limits
+            {t("analytics.budgetLimits")}
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Daily USD</span>
+              <span className="font-mono text-[10px] text-white/35">{t("analytics.dailyUsd")}</span>
               <input
                 value={formatBudgetInput(budgets.dailySpendLimitUsd)}
                 onChange={(event) =>
                   updateBudget("dailySpendLimitUsd", parseBudgetInput(event.target.value))
                 }
-                placeholder="No limit"
+                placeholder={t("analytics.noLimit")}
                 inputMode="decimal"
                 className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Monthly USD</span>
+              <span className="font-mono text-[10px] text-white/35">{t("analytics.monthlyUsd")}</span>
               <input
                 value={formatBudgetInput(budgets.monthlySpendLimitUsd)}
                 onChange={(event) =>
                   updateBudget("monthlySpendLimitUsd", parseBudgetInput(event.target.value))
                 }
-                placeholder="No limit"
+                placeholder={t("analytics.noLimit")}
                 inputMode="decimal"
                 className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Per-agent USD</span>
+              <span className="font-mono text-[10px] text-white/35">{t("analytics.perAgentUsd")}</span>
               <input
                 value={formatBudgetInput(budgets.perAgentSoftLimitUsd)}
                 onChange={(event) =>
                   updateBudget("perAgentSoftLimitUsd", parseBudgetInput(event.target.value))
                 }
-                placeholder="Soft limit"
+                placeholder={t("analytics.softLimit")}
                 inputMode="decimal"
                 className="rounded border border-white/10 bg-black/50 px-2 py-2 font-mono text-[11px] text-white/80 outline-none placeholder:text-white/20"
               />
             </label>
             <label className="flex flex-col gap-1">
-              <span className="font-mono text-[10px] text-white/35">Alert threshold %</span>
+              <span className="font-mono text-[10px] text-white/35">{t("analytics.alertThreshold")}</span>
               <input
                 value={String(budgets.alertThresholdPct)}
                 onChange={(event) =>
@@ -300,13 +304,13 @@ export function AnalyticsPanel({
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Daily Cost
+            {t("analytics.dailyCost")}
           </div>
           {usage.loading ? (
-            <div className="mt-3 font-mono text-[11px] text-white/40">Loading usage data.</div>
+            <div className="mt-3 font-mono text-[11px] text-white/40">{t("analytics.loading")}</div>
           ) : usage.costDaily.length === 0 ? (
             <div className="mt-3 font-mono text-[11px] text-white/35">
-              No cost data in the selected range.
+              {t("analytics.noData")}
             </div>
           ) : (
             <div className="mt-3 flex items-end gap-1">
@@ -335,20 +339,20 @@ export function AnalyticsPanel({
 
           <div className="mt-4 rounded border border-white/8 bg-black/25 px-3 py-3">
             <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
-              Cost Breakdown
+              {t("analytics.costBreakdown")}
             </div>
             <div className="mt-2 space-y-1 font-mono text-[11px] text-white/70">
-              <div>Input: {formatCurrency(usage.totals.inputCost)}.</div>
-              <div>Output: {formatCurrency(usage.totals.outputCost)}.</div>
-              <div>Cache read: {formatCurrency(usage.totals.cacheReadCost)}.</div>
-              <div>Cache write: {formatCurrency(usage.totals.cacheWriteCost)}.</div>
+              <div>{t("analytics.input")}: {formatCurrency(usage.totals.inputCost)}.</div>
+              <div>{t("analytics.output")}: {formatCurrency(usage.totals.outputCost)}.</div>
+              <div>{t("analytics.cacheRead")}: {formatCurrency(usage.totals.cacheReadCost)}.</div>
+              <div>{t("analytics.cacheWrite")}: {formatCurrency(usage.totals.cacheWriteCost)}.</div>
             </div>
           </div>
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Top Agents By Spend
+            {t("analytics.topAgents")}
           </div>
           <div className="mt-3 space-y-2">
             {usage.aggregates.byAgent.slice(0, 6).map((entry) => (
@@ -365,14 +369,14 @@ export function AnalyticsPanel({
               </button>
             ))}
             {usage.aggregates.byAgent.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">No agent spend data yet.</div>
+              <div className="font-mono text-[11px] text-white/35">{t("analytics.noData")}</div>
             ) : null}
           </div>
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Model Breakdown
+            {t("analytics.modelBreakdown")}
           </div>
           <div className="mt-3 space-y-2">
             {usage.aggregates.byModel.slice(0, 6).map((entry) => (
@@ -381,7 +385,7 @@ export function AnalyticsPanel({
                 className="flex items-center justify-between rounded border border-white/8 bg-black/25 px-3 py-2"
               >
                 <span className="font-mono text-[11px] text-white/80">
-                  {entry.provider ?? "unknown"} / {entry.model ?? "unknown"}
+                  {entry.provider ?? t("common.unknown")} / {entry.model ?? t("common.unknown")}
                 </span>
                 <span className="font-mono text-[11px] text-white/55">
                   {formatCurrency(entry.totals.totalCost)}
@@ -389,35 +393,35 @@ export function AnalyticsPanel({
               </div>
             ))}
             {usage.aggregates.byModel.length === 0 ? (
-              <div className="font-mono text-[11px] text-white/35">No model usage data yet.</div>
+              <div className="font-mono text-[11px] text-white/35">{t("analytics.noData")}</div>
             ) : null}
           </div>
         </div>
 
         <div className="mt-5 rounded border border-white/8 bg-white/[0.03] px-3 py-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/35">
-            Performance
+            {t("analytics.performance.title")}
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2">
             <StatCard
-              label="Approvals"
+              label={t("analytics.performance.approvalsLabel")}
               value={formatNumber(approvalMetrics.totals.requestedCount)}
-              hint="Session-local approval requests."
+              hint={t("analytics.performance.approvalsHint")}
             />
             <StatCard
-              label="Intervention Rate"
-              value={formatPercent(performance.fleet.interventionRate)}
-              hint="Approvals per observed run."
+              label={t("analytics.performance.interventionLabel")}
+              value={formatPercent(performance.fleet.interventionRate, t)}
+              hint={t("analytics.performance.interventionHint")}
             />
             <StatCard
-              label="Tool Calls"
+              label={t("analytics.performance.toolCallsLabel")}
               value={formatNumber(performance.fleet.totalToolCalls)}
-              hint="Current transcript state."
+              hint={t("analytics.performance.toolCallsHint")}
             />
             <StatCard
-              label="Completed Runs"
+              label={t("analytics.performance.completedRunsLabel")}
               value={formatNumber(performance.fleet.completedRuns)}
-              hint="In-memory office run log."
+              hint={t("analytics.performance.completedRunsHint")}
             />
           </div>
 
@@ -434,20 +438,20 @@ export function AnalyticsPanel({
                     {row.agentName}
                   </span>
                   <span className="font-mono text-[10px] text-white/40">
-                    {row.totalRuns} runs
+                    {row.totalRuns} {t("analytics.performance.runs")}
                   </span>
                 </div>
                 <div className="mt-3 grid grid-cols-2 gap-2 font-mono text-[10px] text-white/55">
-                  <div>Success: {formatPercent(row.successRate)}.</div>
-                  <div>Avg runtime: {formatDuration(row.avgRuntimeMs)}.</div>
-                  <div>Tool calls: {formatNumber(row.toolCalls)}.</div>
-                  <div>Approvals: {formatNumber(row.approvalRequestedCount)}.</div>
+                  <div>{t("analytics.performance.success")}: {formatPercent(row.successRate, t)}.</div>
+                  <div>{t("analytics.performance.avgRuntime")}: {formatDuration(row.avgRuntimeMs, t)}.</div>
+                  <div>{t("analytics.performance.toolCallsLabel")}: {formatNumber(row.toolCalls)}.</div>
+                  <div>{t("analytics.performance.approvalsLabel")}: {formatNumber(row.approvalRequestedCount)}.</div>
                 </div>
               </button>
             ))}
             {performance.rows.length === 0 ? (
               <div className="font-mono text-[11px] text-white/35">
-                No performance data is available yet.
+                {t("analytics.performance.noData")}
               </div>
             ) : null}
           </div>

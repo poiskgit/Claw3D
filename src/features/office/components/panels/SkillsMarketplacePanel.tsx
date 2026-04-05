@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
+
 
 import {
   Download,
@@ -18,27 +20,7 @@ import type { OfficeSkillsMarketplaceController } from "@/features/office/hooks/
 import type { SkillMarketplaceCollectionId, SkillMarketplaceEntry } from "@/lib/skills/marketplace";
 import { buildSkillMarketplaceCollections } from "@/lib/skills/marketplace";
 import { buildAgentSkillsAllowlistSet, deriveAgentSkillsAccessMode } from "@/lib/skills/presentation";
-
 type MarketplaceFilter = "all" | SkillMarketplaceCollectionId;
-
-const FILTER_LABELS: Record<MarketplaceFilter, string> = {
-  claw3d: "Claw3D",
-  all: "All",
-  featured: "Featured",
-  installed: "Installed",
-  "setup-required": "Needs setup",
-  "built-in": "Built-in",
-  workspace: "Workspace",
-  extra: "Community",
-  other: "Other",
-};
-
-const READINESS_LABELS = {
-  ready: "Ready",
-  "needs-setup": "Needs setup",
-  unavailable: "Unavailable",
-  "disabled-globally": "Disabled globally",
-} as const;
 
 const READINESS_CLASSES = {
   ready: "border-emerald-500/30 bg-emerald-500/10 text-emerald-100",
@@ -99,7 +81,34 @@ export function SkillsMarketplacePanel({
   onSelectAgent: (agentId: string) => void;
   onOpenAgentSettings: (agentId: string) => void;
 }) {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
+
+  const filterLabels = useMemo<Record<MarketplaceFilter, string>>(
+    () => ({
+      claw3d: t("skillsMarketplace.filters.claw3d"),
+      all: t("skillsMarketplace.filters.all"),
+      featured: t("skillsMarketplace.filters.featured"),
+      installed: t("skillsMarketplace.filters.installed"),
+      "setup-required": t("skillsMarketplace.filters.setupRequired"),
+      "built-in": t("skillsMarketplace.filters.builtIn"),
+      workspace: t("skillsMarketplace.filters.workspace"),
+      extra: t("skillsMarketplace.filters.extra"),
+      other: t("skillsMarketplace.filters.other"),
+    }),
+    [t]
+  );
+
+  const readinessLabels = useMemo<Record<keyof typeof READINESS_CLASSES, string>>(
+    () => ({
+      ready: t("skillsMarketplace.readiness.ready"),
+      "needs-setup": t("skillsMarketplace.readiness.needsSetup"),
+      unavailable: t("skillsMarketplace.readiness.unavailable"),
+      "disabled-globally": t("skillsMarketplace.readiness.disabledGlobally"),
+    }),
+    [t]
+  );
+
   const [activeFilter, setActiveFilter] = useState<MarketplaceFilter>("claw3d");
   const [detailSkillKey, setDetailSkillKey] = useState<string | null>(null);
 
@@ -182,10 +191,10 @@ export function SkillsMarketplacePanel({
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/70">
-              Skills Marketplace
+              {t("skillsMarketplace.title")}
             </div>
             <div className="mt-1 font-mono text-[11px] text-white/40">
-              Browse gateway skills like a curated plugin store.
+              {t("skillsMarketplace.description")}
             </div>
           </div>
           <button
@@ -194,29 +203,28 @@ export function SkillsMarketplacePanel({
             className="inline-flex items-center gap-1 rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
           >
             <RefreshCcw className="h-3.5 w-3.5" />
-            Refresh
+            {t("skillsMarketplace.refresh")}
           </button>
         </div>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
         <div className="rounded border border-amber-500/20 bg-amber-500/10 px-3 py-2 font-mono text-[10px] text-amber-100">
-          Packaged skill installs target the selected agent workspace. Global setup actions still affect
-          the whole gateway. Agent access controls below apply only to the selected agent.
+          {t("skillsMarketplace.contextNotice")}
         </div>
 
         <div className="mt-3 rounded border border-cyan-500/15 bg-white/[0.03] px-3 py-3">
           <div className="flex items-center justify-between gap-2">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
-                Agent context
+                {t("skillsMarketplace.agentContext")}
               </div>
               <div className="mt-1 font-mono text-[11px] text-white/75">
-                {marketplace.selectedAgent?.name ?? "No agent selected"}
+                {marketplace.selectedAgent?.name ?? t("skillsMarketplace.noAgent")}
               </div>
             </div>
             <div className="font-mono text-[10px] text-white/35">
-              Access mode: {accessMode === "selected" ? "Selected skills" : accessMode}
+              {t("skillsMarketplace.accessModePrefix")} {accessMode === "selected" ? t("skillsMarketplace.accessModeSelected") : accessMode}
             </div>
           </div>
 
@@ -226,7 +234,7 @@ export function SkillsMarketplacePanel({
               onChange={(event) => marketplace.setSelectedAgentId(event.target.value || null)}
               className="min-w-0 flex-1 rounded border border-white/10 bg-black/40 px-2 py-2 font-mono text-[11px] text-white/80 outline-none"
             >
-              {marketplace.agents.length === 0 ? <option value="">No agents available</option> : null}
+              {marketplace.agents.length === 0 ? <option value="">{t("skillsMarketplace.noAgentsAvailable")}</option> : null}
               {marketplace.agents.map((agent) => (
                 <option key={agent.agentId} value={agent.agentId}>
                   {agent.name}
@@ -243,7 +251,7 @@ export function SkillsMarketplacePanel({
               }}
               className="rounded border border-white/10 bg-white/5 px-2 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Focus chat
+              {t("skillsMarketplace.focusChat")}
             </button>
             <button
               type="button"
@@ -255,7 +263,7 @@ export function SkillsMarketplacePanel({
               }}
               className="rounded border border-white/10 bg-white/5 px-2 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              Settings
+              {t("skillsMarketplace.settings")}
             </button>
           </div>
         </div>
@@ -264,14 +272,14 @@ export function SkillsMarketplacePanel({
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Search skills, categories, or sources"
+            placeholder={t("skillsMarketplace.searchPlaceholder")}
             className="w-full rounded border border-white/10 bg-black/40 px-3 py-2 font-mono text-[11px] text-white/85 outline-none transition focus:border-cyan-400/35"
-            aria-label="Search marketplace skills"
+            aria-label={t("skillsMarketplace.searchAriaLabel")}
           />
         </div>
 
         <div className="mt-2 flex flex-wrap gap-1">
-          {(Object.keys(FILTER_LABELS) as MarketplaceFilter[]).map((filterId) => (
+          {(Object.keys(filterLabels) as MarketplaceFilter[]).map((filterId) => (
             <button
               key={filterId}
               type="button"
@@ -282,7 +290,7 @@ export function SkillsMarketplacePanel({
                   : "border-white/10 bg-white/[0.03] text-white/45 hover:text-white/80"
               }`}
             >
-              {FILTER_LABELS[filterId]} ({filterCounts[filterId]})
+              {filterLabels[filterId]} ({filterCounts[filterId]})
             </button>
           ))}
         </div>
@@ -298,7 +306,7 @@ export function SkillsMarketplacePanel({
             {marketplace.message.text}
             {marketplace.message.kind === "success" ? (
               <div className="mt-1 font-mono text-[10px] text-emerald-100/80">
-                Check the `CLAW3D` filter below to find the installed skill quickly.
+                {t("skillsMarketplace.successHint")}
               </div>
             ) : null}
           </div>
@@ -311,14 +319,14 @@ export function SkillsMarketplacePanel({
         ) : null}
 
         {marketplace.loading ? (
-          <div className="mt-4 font-mono text-[11px] text-white/45">Loading marketplace inventory...</div>
+          <div className="mt-4 font-mono text-[11px] text-white/45">{t("skillsMarketplace.loading")}</div>
         ) : null}
 
         {!marketplace.loading && activeFilter === "all" && featuredEntries.length > 0 ? (
           <div className="mt-4">
             <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
               <Sparkles className="h-3.5 w-3.5 text-cyan-300" />
-              Featured shelf
+              {t("skillsMarketplace.featuredShelf")}
             </div>
             <div className="grid gap-2">
               {featuredEntries.map((entry) => (
@@ -334,7 +342,7 @@ export function SkillsMarketplacePanel({
                       <div className="mt-1 font-mono text-[10px] text-cyan-100/75">{entry.metadata.tagline}</div>
                     </div>
                     <div className="rounded border border-cyan-500/20 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-cyan-100/85">
-                      {entry.metadata.editorBadge ?? "Featured"}
+                      {entry.metadata.editorBadge ?? t("skillsMarketplace.featuredBadge")}
                     </div>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-3 font-mono text-[10px] text-white/55">
@@ -344,14 +352,14 @@ export function SkillsMarketplacePanel({
                           <Star className="h-3 w-3 text-amber-300" />
                           {formatRating(entry.metadata.rating)}
                         </span>
-                        <span>{formatInstalls(entry.metadata.installs)} installs</span>
+                        <span>{formatInstalls(entry.metadata.installs)} {t("skillsMarketplace.installsCount")}</span>
                       </>
                     ) : null}
                     <span>{entry.metadata.category}</span>
                   </div>
                   {entry.metadata.poweredByName && entry.metadata.poweredByUrl ? (
                     <div className="mt-2 font-mono text-[10px] text-white/55">
-                      Powered by{" "}
+                      {t("skillsMarketplace.poweredBy")}{" "}
                       <a
                         href={entry.metadata.poweredByUrl}
                         target="_blank"
@@ -371,7 +379,7 @@ export function SkillsMarketplacePanel({
 
         {!marketplace.loading && filteredCollections.length === 0 ? (
           <div className="mt-4 rounded border border-white/10 bg-white/[0.03] px-3 py-4 font-mono text-[11px] text-white/45">
-            No matching skills found for this gateway.
+            {t("skillsMarketplace.noMatching")}
           </div>
         ) : null}
 
@@ -389,25 +397,25 @@ export function SkillsMarketplacePanel({
                   const primaryAction =
                     packageOnly
                       ? {
-                          label: "Install skill",
+                          label: t("skillsMarketplace.actions.installSkill"),
                           run: () => void marketplace.handleInstallPackagedSkill(entry.skill.skillKey),
                           icon: Download,
                         }
                       : entry.readiness === "needs-setup" && entry.installable
                       ? {
-                          label: "Install deps",
+                          label: t("skillsMarketplace.actions.installDeps"),
                           run: () => void marketplace.handleInstallSkill(entry.skill),
                           icon: Download,
                         }
                       : entry.readiness === "disabled-globally"
                         ? {
-                            label: "Enable gateway",
+                            label: t("skillsMarketplace.actions.enableGateway"),
                             run: () => void marketplace.handleSetSkillGlobalEnabled(entry.skill.skillKey, true),
                             icon: Settings2,
                           }
                         : entry.readiness === "needs-setup"
                           ? {
-                              label: "Open settings",
+                              label: t("skillsMarketplace.actions.openSettings"),
                               run: () => {
                                 if (marketplace.selectedAgentId) {
                                   onOpenAgentSettings(marketplace.selectedAgentId);
@@ -438,7 +446,7 @@ export function SkillsMarketplacePanel({
                             <span
                               className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${READINESS_CLASSES[entry.readiness]}`}
                             >
-                              {READINESS_LABELS[entry.readiness]}
+                              {readinessLabels[entry.readiness]}
                             </span>
                           </div>
                           <div className="mt-2 font-mono text-[10px] text-white/65">{entry.metadata.tagline}</div>
@@ -453,14 +461,14 @@ export function SkillsMarketplacePanel({
                                   <Star className="h-3 w-3 text-amber-300" />
                                   {formatRating(entry.metadata.rating)}
                                 </span>
-                                <span>{formatInstalls(entry.metadata.installs)} installs</span>
+                                <span>{formatInstalls(entry.metadata.installs)} {t("skillsMarketplace.installsCount")}</span>
                               </>
                             ) : null}
                             <span>{entry.skill.source}</span>
                           </div>
                           {entry.metadata.poweredByName && entry.metadata.poweredByUrl ? (
                             <div className="mt-2 font-mono text-[10px] text-white/55">
-                              Powered by{" "}
+                              {t("skillsMarketplace.poweredBy")}{" "}
                               <a
                                 href={entry.metadata.poweredByUrl}
                                 target="_blank"
@@ -494,7 +502,7 @@ export function SkillsMarketplacePanel({
                                 : "border-white/10 bg-white/5 text-white/75 hover:bg-white/10"
                             }`}
                           >
-                            {isEnabledForAgent ? "Disable for agent" : "Enable for agent"}
+                            {isEnabledForAgent ? t("skillsMarketplace.actions.disableForAgent") : t("skillsMarketplace.actions.enableForAgent")}
                           </button>
 
                           <div className="flex flex-wrap justify-end gap-2">
@@ -523,7 +531,7 @@ export function SkillsMarketplacePanel({
                                 className="inline-flex items-center gap-1 rounded border border-rose-500/25 bg-rose-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-rose-100 transition-colors hover:border-rose-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
-                                Remove for all agents
+                                {t("skillsMarketplace.actions.removeForAll")}
                               </button>
                             ) : null}
 
@@ -532,7 +540,7 @@ export function SkillsMarketplacePanel({
                               onClick={() => setDetailSkillKey(entry.skill.skillKey)}
                               className="rounded border border-white/10 bg-white/5 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10"
                             >
-                              Details
+                              {t("skillsMarketplace.actions.details")}
                             </button>
                           </div>
                         </div>
@@ -540,19 +548,21 @@ export function SkillsMarketplacePanel({
                       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 font-mono text-[10px] text-white/35">
                         <div>
                           {isEnabledForAgent
-                            ? "This skill is currently enabled for the selected agent."
-                            : "This skill is currently disabled for the selected agent."}
+                            ? t("skillsMarketplace.statusDocs.enabled")
+                            : t("skillsMarketplace.statusDocs.disabled")}
                         </div>
                         {entry.removable ? (
-                          <div>Removing from the gateway deletes the installed skill for every agent.</div>
+                          <div>{t("skillsMarketplace.statusDocs.removeWarning")}</div>
                         ) : null}
                       </div>
                     </div>
                   );
                 })}
+
               </div>
             </div>
           ))}
+
       </div>
 
       {detailEntry ? (
@@ -560,7 +570,7 @@ export function SkillsMarketplacePanel({
           <div className="flex items-start justify-between border-b border-cyan-500/10 px-4 py-3">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
-                Skill detail
+                {t("skillsMarketplace.detail.title")}
               </div>
               <div className="mt-1 font-mono text-[14px] font-semibold text-white/90">
                 {detailEntry.skill.name}
@@ -588,13 +598,13 @@ export function SkillsMarketplacePanel({
                 <span
                   className={`rounded border px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] ${READINESS_CLASSES[detailEntry.readiness]}`}
                 >
-                  {READINESS_LABELS[detailEntry.readiness]}
+                  {readinessLabels[detailEntry.readiness]}
                 </span>
               </div>
               <div className="mt-3 font-mono text-[11px] text-white/75">{detailEntry.metadata.tagline}</div>
               {detailEntry.metadata.poweredByName && detailEntry.metadata.poweredByUrl ? (
                 <div className="mt-3 font-mono text-[10px] text-white/60">
-                  Powered by{" "}
+                  {t("skillsMarketplace.poweredBy")}{" "}
                   <a
                     href={detailEntry.metadata.poweredByUrl}
                     target="_blank"
@@ -613,17 +623,17 @@ export function SkillsMarketplacePanel({
                 {!detailEntry.metadata.hideStats ? (
                   <>
                     <div className="rounded border border-white/8 bg-black/30 px-2 py-2">
-                      <div className="text-white/35">Rating</div>
+                      <div className="text-white/35">{t("skillsMarketplace.detail.rating")}</div>
                       <div className="mt-1 text-white/90">{formatRating(detailEntry.metadata.rating)}</div>
                     </div>
                     <div className="rounded border border-white/8 bg-black/30 px-2 py-2">
-                      <div className="text-white/35">Installs</div>
+                      <div className="text-white/35">{t("skillsMarketplace.detail.installs")}</div>
                       <div className="mt-1 text-white/90">{formatInstalls(detailEntry.metadata.installs)}</div>
                     </div>
                   </>
                 ) : null}
                 <div className="rounded border border-white/8 bg-black/30 px-2 py-2">
-                  <div className="text-white/35">Source</div>
+                  <div className="text-white/35">{t("skillsMarketplace.detail.source")}</div>
                   <div className="mt-1 text-white/90">{detailEntry.skill.source}</div>
                 </div>
               </div>
@@ -631,7 +641,7 @@ export function SkillsMarketplacePanel({
 
             <div className="mt-4">
               <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
-                Capabilities
+                {t("skillsMarketplace.detail.capabilities")}
               </div>
               <div className="mt-2 flex flex-col gap-2">
                 {detailEntry.metadata.capabilities.map((capability) => (
@@ -648,7 +658,7 @@ export function SkillsMarketplacePanel({
             {detailEntry.missingDetails.length > 0 ? (
               <div className="mt-4">
                 <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
-                  Setup notes
+                  {t("skillsMarketplace.detail.setupNotes")}
                 </div>
                 <div className="mt-2 flex flex-col gap-2">
                   {detailEntry.missingDetails.map((line) => (
@@ -664,8 +674,7 @@ export function SkillsMarketplacePanel({
             ) : null}
 
             <div className="mt-4 rounded border border-cyan-500/15 bg-cyan-500/10 px-3 py-3 font-mono text-[10px] text-cyan-100">
-              Packaged installs land in the selected workspace. Gateway setup changes still apply to every
-              agent, and agent enablement depends on the selected agent&apos;s allowlist.
+              {t("skillsMarketplace.detail.installNotice")}
             </div>
 
             <div className="mt-4 flex flex-wrap gap-2">
@@ -678,7 +687,7 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-cyan-500/25 bg-cyan-500/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Download className="h-3.5 w-3.5" />
-                  Install skill
+                  {t("skillsMarketplace.actions.installSkill")}
                 </button>
               ) : null}
               {detailEntry.readiness === "needs-setup" && detailEntry.installable ? (
@@ -689,7 +698,7 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-cyan-500/25 bg-cyan-500/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Download className="h-3.5 w-3.5" />
-                  Install dependencies
+                  {t("skillsMarketplace.actions.installDeps")}
                 </button>
               ) : null}
               {detailEntry.readiness === "disabled-globally" ? (
@@ -702,7 +711,7 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-cyan-500/25 bg-cyan-500/10 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-cyan-100 transition-colors hover:border-cyan-400/40 disabled:cursor-not-allowed disabled:opacity-45"
                 >
                   <Settings2 className="h-3.5 w-3.5" />
-                  Enable for gateway
+                  {t("skillsMarketplace.actions.enableGateway")}
                 </button>
               ) : null}
               <button
@@ -716,7 +725,7 @@ export function SkillsMarketplacePanel({
                 className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-45"
               >
                 <Settings2 className="h-3.5 w-3.5" />
-                Manage in settings
+                {t("skillsMarketplace.actions.manageSettings")}
               </button>
               {detailEntry.skill.homepage ? (
                 <a
@@ -726,13 +735,12 @@ export function SkillsMarketplacePanel({
                   className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  Homepage
+                  {t("skillsMarketplace.actions.homepage")}
                 </a>
               ) : null}
             </div>
             <div className="mt-4 rounded border border-white/8 bg-white/[0.03] px-3 py-3 font-mono text-[10px] text-white/60">
-              `Enable/Disable for agent` only changes access for the selected agent. `Remove for all agents`
-              deletes the installed skill from the gateway workspace.
+              {t("skillsMarketplace.detail.footerNote")}
             </div>
           </div>
         </div>

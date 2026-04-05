@@ -12,10 +12,10 @@ import {
 } from "react";
 import type { AgentState as AgentRecord } from "@/features/agents/state/store";
 import ReactMarkdown from "react-markdown";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 import remarkGfm from "remark-gfm";
-import { Check, ChevronRight, Clock, Mic, Pencil, Square, Trash2, X } from "lucide-react";
+import { Check, ChevronRight, Clock, Cog, Mic, Pencil, Square, Trash2, X } from "lucide-react";
 import type { GatewayModelChoice } from "@/lib/gateway/models";
-import type { AgentAvatarProfile } from "@/lib/avatars/profile";
 import { rewriteMediaLinesToMarkdown } from "@/lib/text/media-markdown";
 import { normalizeAssistantDisplayText } from "@/lib/text/assistantText";
 import { isNearBottom } from "@/lib/dom";
@@ -53,17 +53,7 @@ const ASSISTANT_GUTTER_CLASS = "pl-[44px]";
 const ASSISTANT_MAX_WIDTH_DEFAULT_CLASS = "max-w-[68ch]";
 const ASSISTANT_MAX_WIDTH_EXPANDED_CLASS = "max-w-[1120px]";
 const CHAT_TOP_THRESHOLD_PX = 8;
-const CHAT_SELECT_STYLE = {
-  backgroundColor: "#17120a",
-  color: "#ffffff",
-} as const;
-const EMPTY_CHAT_INTRO_MESSAGES = [
-  "How can I help you today?",
-  "What should we accomplish today?",
-  "Ready when you are. What do you want to tackle?",
-  "What are we working on today?",
-  "I'm here and ready. What's the plan?",
-];
+// Handled dynamically via t("agentChat.intros")
 
 const stableStringHash = (value: string): number => {
   let hash = 0;
@@ -73,15 +63,15 @@ const stableStringHash = (value: string): number => {
   return hash;
 };
 
-const resolveEmptyChatIntroMessage = (agentId: string, sessionEpoch: number | undefined): string => {
-  if (EMPTY_CHAT_INTRO_MESSAGES.length === 0) return "How can I help you today?";
+const resolveEmptyChatIntroMessage = (agentId: string, sessionEpoch: number | undefined, intros: string[]): string => {
+  if (intros.length === 0) return "How can I help you today?";
   const normalizedEpoch =
     typeof sessionEpoch === "number" && Number.isFinite(sessionEpoch)
       ? Math.max(0, Math.trunc(sessionEpoch))
       : 0;
-  const offset = stableStringHash(agentId) % EMPTY_CHAT_INTRO_MESSAGES.length;
-  const index = (offset + normalizedEpoch) % EMPTY_CHAT_INTRO_MESSAGES.length;
-  return EMPTY_CHAT_INTRO_MESSAGES[index];
+  const offset = stableStringHash(agentId) % intros.length;
+  const index = (offset + normalizedEpoch) % intros.length;
+  return intros[index];
 };
 
 const looksLikePath = (value: string): boolean => {
@@ -125,7 +115,7 @@ type AgentChatPanelProps = {
   stopBusy: boolean;
   stopDisabledReason?: string | null;
   onLoadMoreHistory: () => void;
-  onOpenSettings?: () => void;
+  onOpenSettings: () => void;
   onRename?: (name: string) => Promise<boolean>;
   onNewSession?: () => Promise<void> | void;
   onModelChange: (value: string | null) => void;
@@ -142,8 +132,8 @@ type AgentChatPanelProps = {
   onVoiceSend?: (payload: VoiceSendPayload) => Promise<void>;
 };
 
-const formatApprovalExpiry = (timestampMs: number): string => {
-  if (!Number.isFinite(timestampMs) || timestampMs <= 0) return "Unknown";
+const formatApprovalExpiry = (timestampMs: number, t: any): string => {
+  if (!Number.isFinite(timestampMs) || timestampMs <= 0) return t("common.unknown");
   return new Intl.DateTimeFormat(undefined, {
     month: "short",
     day: "numeric",
@@ -159,6 +149,7 @@ const ExecApprovalCard = memo(function ExecApprovalCard({
   approval: PendingExecApproval;
   onResolve?: (id: string, decision: ExecApprovalDecision) => void;
 }) {
+  const { t } = useTranslation();
   const disabled = approval.resolving || !onResolve;
   return (
     <div
@@ -166,18 +157,18 @@ const ExecApprovalCard = memo(function ExecApprovalCard({
       data-testid={`exec-approval-card-${approval.id}`}
     >
       <div className="type-meta">
-        Exec approval required
+        {t("agentChat.execApproval.title")}
       </div>
       <div className="mt-2 rounded-md bg-surface-3 px-2 py-1.5 shadow-2xs">
-        <div className="font-mono text-[10px] font-semibold text-foreground">{approval.command}</div>
+        <div className="font-mono text-[11px] font-semibold text-foreground">{approval.command}</div>
       </div>
-      <div className="mt-2 grid gap-1 text-[11px] text-muted-foreground sm:grid-cols-2">
-        <div>Host: {approval.host ?? "unknown"}</div>
-        <div>Expires: {formatApprovalExpiry(approval.expiresAtMs)}</div>
-        {approval.cwd ? <div className="sm:col-span-2">CWD: {approval.cwd}</div> : null}
+      <div className="mt-2 grid gap-1 text-xs text-muted-foreground sm:grid-cols-2">
+        <div>{t("agentChat.execApproval.hostLabel")}: {approval.host ?? t("common.unknown")}</div>
+        <div>{t("agentChat.execApproval.expiresLabel")}: {formatApprovalExpiry(approval.expiresAtMs, t)}</div>
+        {approval.cwd ? <div className="sm:col-span-2">{t("agentChat.execApproval.cwdLabel")}: {approval.cwd}</div> : null}
       </div>
       {approval.error ? (
-        <div className="ui-alert-danger mt-2 rounded-md px-2 py-1 text-[11px] shadow-2xs">
+        <div className="ui-alert-danger mt-2 rounded-md px-2 py-1 text-xs shadow-2xs">
           {approval.error}
         </div>
       ) : null}
@@ -187,27 +178,27 @@ const ExecApprovalCard = memo(function ExecApprovalCard({
           className="rounded-md border border-border/70 bg-surface-3 px-2.5 py-1 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onResolve?.(approval.id, "allow-once")}
           disabled={disabled}
-          aria-label={`Allow once for exec approval ${approval.id}`}
+          aria-label={t("agentChat.execApproval.allowOnceAria").replace("{0}", approval.id)}
         >
-          Allow once
+          {t("agentChat.execApproval.allowOnce")}
         </button>
         <button
           type="button"
           className="rounded-md border border-border/70 bg-surface-3 px-2.5 py-1 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2 disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onResolve?.(approval.id, "allow-always")}
           disabled={disabled}
-          aria-label={`Always allow for exec approval ${approval.id}`}
+          aria-label={t("agentChat.execApproval.allowAlwaysAria").replace("{0}", approval.id)}
         >
-          Always allow
+          {t("agentChat.execApproval.allowAlways")}
         </button>
         <button
           type="button"
           className="ui-btn-danger rounded-md px-2.5 py-1 font-mono text-[12px] font-medium tracking-[0.02em] transition disabled:cursor-not-allowed disabled:opacity-60"
           onClick={() => onResolve?.(approval.id, "deny")}
           disabled={disabled}
-          aria-label={`Deny exec approval ${approval.id}`}
+          aria-label={t("agentChat.execApproval.denyAria").replace("{0}", approval.id)}
         >
-          Deny
+          {t("agentChat.execApproval.deny")}
         </button>
       </div>
     </div>
@@ -225,18 +216,18 @@ const ToolCallDetails = memo(function ToolCallDetails({
   const [open, setOpen] = useState(false);
   const resolvedClassName =
     className ??
-    `w-full ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} self-start rounded-md bg-surface-3 px-2 py-1 text-[10px] text-muted-foreground shadow-2xs`;
+    `w-full ${ASSISTANT_MAX_WIDTH_EXPANDED_CLASS} ${ASSISTANT_GUTTER_CLASS} self-start rounded-md bg-surface-3 px-2 py-1 text-[11px] text-muted-foreground shadow-2xs`;
   if (inlineOnly) {
     return (
       <div className={resolvedClassName}>
-        <div className="font-mono text-[10px] font-semibold tracking-[0.11em]">{summaryText}</div>
+        <div className="font-mono text-[11px] font-semibold tracking-[0.11em]">{summaryText}</div>
       </div>
     );
   }
   return (
     <details open={open} className={resolvedClassName}>
       <summary
-        className="cursor-pointer select-none font-mono text-[10px] font-semibold tracking-[0.11em]"
+        className="cursor-pointer select-none font-mono text-[11px] font-semibold tracking-[0.11em]"
         onClick={(event) => {
           event.preventDefault();
           setOpen((current) => !current);
@@ -268,6 +259,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
   durationMs?: number;
   showTyping?: boolean;
 }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const traceEvents = (() => {
     if (events && events.length > 0) return events;
@@ -285,7 +277,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
   return (
     <details
       open={open}
-      className="ui-chat-thinking group rounded-md px-2 py-1.5 text-[10px] shadow-2xs"
+      className="ui-chat-thinking group rounded-md px-2 py-1.5 text-[11px] shadow-2xs"
     >
       <summary
         className="flex cursor-pointer list-none items-center gap-2 opacity-65 [&::-webkit-details-marker]:hidden"
@@ -296,11 +288,11 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
       >
         <ChevronRight className="h-3 w-3 shrink-0 transition group-open:rotate-90" />
         <span className="flex min-w-0 items-center gap-2">
-          <span className="font-mono text-[10px] font-medium tracking-[0.02em]">
-            Thinking (internal)
-          </span>
+          <span className="font-mono text-[11px] font-medium tracking-[0.02em]">
+          {t("agentChat.thinkingInternal").replace("{0}", t("agentChat.thinking"))}
+        </span>
           {typeof durationMs === "number" ? (
-            <span className="inline-flex items-center gap-1 font-mono text-[10px] font-medium tracking-[0.02em] text-muted-foreground/80">
+            <span className="inline-flex items-center gap-1 font-mono text-[11px] font-medium tracking-[0.02em] text-muted-foreground/80">
               <Clock className="h-3 w-3" />
               {formatDurationLabel(durationMs)}
             </span>
@@ -328,7 +320,7 @@ const ThinkingDetailsRow = memo(function ThinkingDetailsRow({
               <ToolCallDetails
                 key={`thinking-tool-${index}-${event.text.slice(0, 48)}`}
                 line={event.text}
-                className="rounded-md border border-border/45 bg-surface-2/65 px-2 py-1 text-[10px] text-muted-foreground/90 shadow-2xs"
+                className="rounded-md border border-border/45 bg-surface-2/65 px-2 py-1 text-[11px] text-muted-foreground/90 shadow-2xs"
               />
             )
           )}
@@ -345,11 +337,12 @@ const UserMessageCard = memo(function UserMessageCard({
   text: string;
   timestampMs?: number;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="ui-chat-user-card w-full max-w-[70ch] self-end overflow-hidden rounded-[var(--radius-small)] bg-[color:var(--chat-user-bg)]">
       <div className="flex items-center justify-between gap-3 bg-[color:var(--chat-user-header-bg)] px-3 py-2 dark:px-3.5 dark:py-2.5">
         <div className="type-meta min-w-0 truncate font-mono text-foreground/90">
-          You
+          {t("agentChat.you")}
         </div>
         {typeof timestampMs === "number" ? (
           <time className="type-meta shrink-0 rounded-md bg-surface-3 px-2 py-0.5 font-mono text-muted-foreground/70">
@@ -366,7 +359,6 @@ const UserMessageCard = memo(function UserMessageCard({
 
 const AssistantMessageCard = memo(function AssistantMessageCard({
   avatarSeed,
-  avatarProfile,
   avatarUrl,
   name,
   timestampMs,
@@ -378,7 +370,6 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
   streaming,
 }: {
   avatarSeed: string;
-  avatarProfile?: AgentAvatarProfile | null;
   avatarUrl: string | null;
   name: string;
   timestampMs?: number;
@@ -389,6 +380,7 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
   contentText?: string | null;
   streaming?: boolean;
 }) {
+  const { t } = useTranslation();
   const resolvedTimestamp = typeof timestampMs === "number" ? timestampMs : null;
   const hasThinking = Boolean(
     (thinkingEvents?.length ?? 0) > 0 ||
@@ -405,13 +397,7 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
     <div className="w-full self-start">
       <div className={`relative w-full ${widthClass} ${ASSISTANT_GUTTER_CLASS}`}>
         <div className="absolute left-[4px] top-[2px]">
-          <AgentAvatar
-            seed={avatarSeed}
-            name={name}
-            avatarProfile={avatarProfile}
-            avatarUrl={avatarUrl}
-            size={22}
-          />
+          <AgentAvatar seed={avatarSeed} name={name} avatarUrl={avatarUrl} size={22} />
         </div>
         <div className="flex items-center justify-between gap-3 py-0.5">
           <div className="type-meta min-w-0 truncate font-mono text-foreground/90">
@@ -426,13 +412,13 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
 
         {compactStreamingIndicator ? (
           <div
-            className="mt-2 inline-flex items-center gap-2 rounded-md bg-surface-3 px-3 py-2 text-[10px] text-muted-foreground/80 shadow-2xs"
+            className="mt-2 inline-flex items-center gap-2 rounded-md bg-surface-3 px-3 py-2 text-[11px] text-muted-foreground/80 shadow-2xs"
             role="status"
             aria-live="polite"
             data-testid="agent-typing-indicator"
           >
-            <span className="font-mono text-[10px] font-medium tracking-[0.02em]">
-              Thinking
+            <span className="font-mono text-[11px] font-medium tracking-[0.02em]">
+              {t("agentChat.thinking")}
             </span>
             <span className="typing-dots" aria-hidden="true">
               <span />
@@ -444,13 +430,13 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
           <div className="mt-2 space-y-3 dark:space-y-5">
             {streaming && !hasThinking ? (
               <div
-                className="flex items-center gap-2 text-[10px] text-muted-foreground/80"
+                className="flex items-center gap-2 text-[11px] text-muted-foreground/80"
                 role="status"
                 aria-live="polite"
                 data-testid="agent-typing-indicator"
               >
-                <span className="font-mono text-[10px] font-medium tracking-[0.02em]">
-                  Thinking
+                <span className="font-mono text-[11px] font-medium tracking-[0.02em]">
+                  {t("agentChat.thinking")}
                 </span>
                 <span className="typing-dots" aria-hidden="true">
                   <span />
@@ -513,28 +499,21 @@ const AssistantMessageCard = memo(function AssistantMessageCard({
 
 const AssistantIntroCard = memo(function AssistantIntroCard({
   avatarSeed,
-  avatarProfile,
   avatarUrl,
   name,
   title,
 }: {
   avatarSeed: string;
-  avatarProfile?: AgentAvatarProfile | null;
   avatarUrl: string | null;
   name: string;
   title: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="w-full self-start">
       <div className={`relative w-full ${ASSISTANT_MAX_WIDTH_DEFAULT_CLASS} ${ASSISTANT_GUTTER_CLASS}`}>
         <div className="absolute left-[4px] top-[2px]">
-          <AgentAvatar
-            seed={avatarSeed}
-            name={name}
-            avatarProfile={avatarProfile}
-            avatarUrl={avatarUrl}
-            size={22}
-          />
+          <AgentAvatar seed={avatarSeed} name={name} avatarUrl={avatarUrl} size={22} />
         </div>
         <div className="flex items-center justify-between gap-3 py-0.5">
           <div className="type-meta min-w-0 truncate font-mono text-foreground/90">
@@ -543,8 +522,8 @@ const AssistantIntroCard = memo(function AssistantIntroCard({
         </div>
         <div className="ui-chat-assistant-card mt-2">
           <div className="text-[14px] leading-[1.65] text-foreground">{title}</div>
-          <div className="mt-2 font-mono text-[10px] tracking-[0.03em] text-muted-foreground/80">
-            Try describing a task, bug, or question to get started.
+          <div className="mt-2 font-mono text-[11px] tracking-[0.03em] text-muted-foreground/80">
+            {t("agentChat.emptyStateHint")}
           </div>
         </div>
       </div>
@@ -556,7 +535,6 @@ const AgentChatFinalItems = memo(function AgentChatFinalItems({
   agentId,
   name,
   avatarSeed,
-  avatarProfile,
   avatarUrl,
   chatItems,
   running,
@@ -565,7 +543,6 @@ const AgentChatFinalItems = memo(function AgentChatFinalItems({
   agentId: string;
   name: string;
   avatarSeed: string;
-  avatarProfile?: AgentAvatarProfile | null;
   avatarUrl: string | null;
   chatItems: AgentChatItem[];
   running: boolean;
@@ -590,7 +567,6 @@ const AgentChatFinalItems = memo(function AgentChatFinalItems({
           <AssistantMessageCard
             key={`chat-${agentId}-assistant-${index}`}
             avatarSeed={avatarSeed}
-            avatarProfile={avatarProfile}
             avatarUrl={avatarUrl}
             name={name}
             timestampMs={block.timestampMs ?? (streaming ? runStartedAt ?? undefined : undefined)}
@@ -609,7 +585,6 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
   agentId,
   name,
   avatarSeed,
-  avatarProfile,
   avatarUrl,
   status,
   historyMaybeTruncated,
@@ -632,7 +607,6 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
   agentId: string;
   name: string;
   avatarSeed: string;
-  avatarProfile?: AgentAvatarProfile | null;
   avatarUrl: string | null;
   status: AgentRecord["status"];
   historyMaybeTruncated: boolean;
@@ -652,6 +626,7 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
   onResolveExecApproval?: (id: string, decision: ExecApprovalDecision) => void;
   emptyStateTitle: string;
 }) {
+  const { t } = useTranslation();
   const chatRef = useRef<HTMLDivElement | null>(null);
   const chatBottomRef = useRef<HTMLDivElement | null>(null);
   const scrollFrameRef = useRef<number | null>(null);
@@ -777,22 +752,22 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
           {historyMaybeTruncated && isAtTop ? (
             <div className="-mx-1 flex items-center justify-between gap-3 rounded-md bg-surface-2 px-3 py-2 shadow-2xs">
               <div className="type-meta min-w-0 truncate font-mono text-muted-foreground">
-                Showing most recent {typeof historyFetchedCount === "number" ? historyFetchedCount : "?"} messages
-                {typeof historyFetchLimit === "number" ? ` (limit ${historyFetchLimit})` : ""}
+                {t("agentChat.historyLimit")
+                  .replace("{0}", historyFetchedCount?.toString() ?? "?")
+                  .replace("{1}", historyFetchLimit?.toString() ?? "?")}
               </div>
               <button
                 type="button"
                 className="shrink-0 rounded-md border border-border/70 bg-surface-3 px-3 py-1.5 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground transition hover:bg-surface-2"
                 onClick={onLoadMoreHistory}
               >
-                Load more
+                {t("agentChat.loadMore")}
               </button>
             </div>
           ) : null}
           {!hasTranscriptContent ? (
             <AssistantIntroCard
               avatarSeed={avatarSeed}
-              avatarProfile={avatarProfile}
               avatarUrl={avatarUrl}
               name={name}
               title={emptyStateTitle}
@@ -803,7 +778,6 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
                 agentId={agentId}
                 name={name}
                 avatarSeed={avatarSeed}
-                avatarProfile={avatarProfile}
                 avatarUrl={avatarUrl}
                 chatItems={chatItems}
                 running={status === "running"}
@@ -812,7 +786,6 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
               {showLiveAssistantCard ? (
                 <AssistantMessageCard
                   avatarSeed={avatarSeed}
-                  avatarProfile={avatarProfile}
                   avatarUrl={avatarUrl}
                   name={name}
                   timestampMs={runStartedAt ?? undefined}
@@ -847,9 +820,9 @@ const AgentChatTranscript = memo(function AgentChatTranscript({
             setPinned(true);
             scrollChatToBottom();
           }}
-          aria-label="Jump to latest"
+          aria-label={t("agentChat.jumpToLatest")}
         >
-          Jump to latest
+          {t("agentChat.jumpToLatest")}
         </button>
       ) : null}
     </div>
@@ -869,7 +842,7 @@ const InlineHoverTooltip = ({
       {children}
       <span
         role="tooltip"
-        className="pointer-events-none absolute -top-7 left-1/2 z-20 w-max max-w-none -translate-x-1/2 whitespace-nowrap rounded-md border border-border/70 bg-card px-2 py-1 font-mono text-[10px] text-foreground opacity-0 shadow-sm transition-opacity duration-150 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100"
+        className="pointer-events-none absolute -top-7 left-1/2 z-20 w-max max-w-none -translate-x-1/2 whitespace-nowrap rounded-md border border-border/70 bg-card px-2 py-1 font-mono text-[11px] text-foreground opacity-0 shadow-sm transition-opacity duration-150 group-hover/tooltip:opacity-100 group-focus-within/tooltip:opacity-100"
       >
         {text}
       </span>
@@ -936,6 +909,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
   onToolCallingToggle: (enabled: boolean) => void;
   onThinkingTracesToggle: (enabled: boolean) => void;
 }) {
+  const { t } = useTranslation();
   const stopReason = stopDisabledReason?.trim() ?? "";
   const stopDisabled = !canSend || stopBusy || Boolean(stopReason);
   const stopAriaLabel = stopReason ? `Stop unavailable: ${stopReason}` : "Stop";
@@ -988,12 +962,12 @@ const AgentChatComposer = memo(function AgentChatComposer({
     <>
       <div className="mb-1.5 flex items-center justify-between gap-2 px-1">
         <div className="flex min-w-0 items-center gap-2">
-          <InlineHoverTooltip text="Choose model">
+          <InlineHoverTooltip text={t("agentChat.chooseModel") ?? "Choose model"}>
             <select
-              className="ui-input ui-control-important h-6 min-w-0 rounded-md border-white/10 px-1.5 text-[10px] font-semibold text-white"
+              className="ui-input ui-control-important h-6 min-w-0 rounded-md px-1.5 text-[11px] font-semibold text-foreground"
               aria-label="Model"
               value={modelValue}
-              style={{ ...CHAT_SELECT_STYLE, width: `${modelSelectWidthCh}ch` }}
+              style={{ width: `${modelSelectWidthCh}ch` }}
               onChange={(event) => {
                 const nextValue = event.target.value.trim();
                 onModelChange(nextValue ? nextValue : null);
@@ -1011,12 +985,12 @@ const AgentChatComposer = memo(function AgentChatComposer({
             </select>
           </InlineHoverTooltip>
           {allowThinking ? (
-            <InlineHoverTooltip text="Select reasoning effort">
+            <InlineHoverTooltip text={t("agentChat.selectReasoningEffort") ?? "Select reasoning effort"}>
               <select
-                className="ui-input ui-control-important h-6 rounded-md border-white/10 px-1.5 text-[10px] font-semibold text-white"
+                className="ui-input ui-control-important h-6 rounded-md px-1.5 text-[11px] font-semibold text-foreground"
                 aria-label="Thinking"
                 value={thinkingValue}
-                style={{ ...CHAT_SELECT_STYLE, width: `${thinkingSelectWidthCh}ch` }}
+                style={{ width: `${thinkingSelectWidthCh}ch` }}
                 onChange={(event) => {
                   const nextValue = event.target.value.trim();
                   onThinkingChange(nextValue ? nextValue : null);
@@ -1038,9 +1012,9 @@ const AgentChatComposer = memo(function AgentChatComposer({
           <button
             type="button"
             role="switch"
-            aria-label="Show tool calls"
+            aria-label={t("agentChat.showToolCalls") ?? "Show tool calls"}
             aria-checked={toolCallingEnabled}
-            className={`inline-flex h-5 items-center rounded-sm border px-1.5 font-mono text-[10px] tracking-[0.01em] transition ${
+            className={`inline-flex h-5 items-center rounded-sm border px-1.5 font-mono text-[11px] tracking-[0.01em] transition ${
               toolCallingEnabled
                 ? "border-primary/45 bg-primary/14 text-foreground"
                 : "border-border/70 bg-surface-2/40 text-muted-foreground hover:text-foreground"
@@ -1052,9 +1026,9 @@ const AgentChatComposer = memo(function AgentChatComposer({
           <button
             type="button"
             role="switch"
-            aria-label="Show thinking"
+            aria-label={t("agentChat.showThinkingTraces") ?? "Show thinking traces"}
             aria-checked={showThinkingTraces}
-            className={`inline-flex h-5 items-center rounded-sm border px-1.5 font-mono text-[10px] tracking-[0.01em] transition ${
+            className={`inline-flex h-5 items-center rounded-sm border px-1.5 font-mono text-[11px] tracking-[0.01em] transition ${
               showThinkingTraces
                 ? "border-primary/45 bg-primary/14 text-white"
                 : "border-border/70 bg-surface-2/40 text-muted-foreground hover:text-white"
@@ -1080,10 +1054,10 @@ const AgentChatComposer = memo(function AgentChatComposer({
               {queuedMessages.map((queuedMessage, index) => (
                 <div
                   key={`${index}-${queuedMessage}`}
-                  className="flex w-full min-w-0 max-w-full items-center gap-1 overflow-hidden rounded-md border border-border/70 bg-card/80 px-2 py-1 text-[11px] text-foreground"
+                  className="flex w-full min-w-0 max-w-full items-center gap-1 overflow-hidden rounded-md border border-border/70 bg-card/80 px-2 py-1 text-xs text-foreground"
                 >
-                  <span className="font-mono text-[10px] uppercase tracking-[0.06em] text-muted-foreground">
-                    Queued
+                  <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-muted-foreground">
+                    {t("agentChat.queued") ?? "Queued"}
                   </span>
                   <span
                     className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap"
@@ -1094,7 +1068,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
                   <button
                     type="button"
                     className="inline-flex h-4 w-4 flex-none items-center justify-center rounded-sm text-muted-foreground transition hover:bg-surface-2 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
-                    aria-label={`Remove queued message ${index + 1}`}
+                    aria-label={(t("agentChat.removeQueuedMessage") ?? "Remove queued message {0}").replace("{0}", String(index + 1))}
                     onClick={() => onRemoveQueuedMessage?.(index)}
                     disabled={!onRemoveQueuedMessage}
                   >
@@ -1111,7 +1085,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
                 disabled
                 className="invisible rounded-md border border-border/70 bg-surface-3 px-3 py-2 font-mono text-[12px] font-medium tracking-[0.02em] text-foreground"
               >
-                {stopBusy ? "Stopping" : "Stop"}
+                {stopBusy ? (t("agentChat.stopping") ?? "Stopping") : (t("agentChat.stop") ?? "Stop")}
               </button>
             ) : null}
             <button
@@ -1121,13 +1095,13 @@ const AgentChatComposer = memo(function AgentChatComposer({
               disabled
               className="ui-btn-primary ui-btn-send invisible px-3 py-2 font-mono text-[12px] font-medium tracking-[0.02em]"
             >
-              Send
+              {t("agentChat.send") ?? "Send"}
             </button>
           </div>
         ) : null}
         {voiceStatusText || voiceError ? (
           <div
-            className={`mb-2 rounded-md border px-2.5 py-1.5 font-mono text-[10px] tracking-[0.02em] ${
+            className={`mb-2 rounded-md border px-2.5 py-1.5 font-mono text-[11px] tracking-[0.02em] ${
               voiceError
                 ? "ui-badge-status-error"
                 : "ui-badge-status-approval"
@@ -1145,11 +1119,11 @@ const AgentChatComposer = memo(function AgentChatComposer({
             className="chat-composer-input min-h-[64px] flex-1 resize-none border-0 bg-transparent px-0 py-1 text-[15px] leading-6 text-foreground outline-none shadow-none transition placeholder:text-muted-foreground/65 focus:outline-none focus-visible:outline-none focus-visible:ring-0"
             onChange={onChange}
             onKeyDown={onKeyDown}
-            placeholder="type a message"
+            placeholder={t("agentChat.typeMessagePlaceholder") ?? "type a message"}
           />
           {voiceEnabled ? (
             <button
-              className={`rounded-md border px-2.5 py-2 font-mono text-[11px] font-medium tracking-[0.02em] transition ${
+              className={`rounded-md border px-2.5 py-2 font-mono text-xs font-medium tracking-[0.02em] transition ${
                 voiceRecording
                   ? "ui-btn-danger"
                   : "border-border/70 bg-surface-3 text-white hover:bg-surface-2 hover:text-white"
@@ -1176,7 +1150,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
                 disabled={stopDisabled}
                 aria-label={stopAriaLabel}
               >
-                {stopBusy ? "Stopping" : "Stop"}
+                {stopBusy ? (t("agentChat.stopping") ?? "Stopping") : (t("agentChat.stop") ?? "Stop")}
               </button>
             </span>
           ) : null}
@@ -1186,7 +1160,7 @@ const AgentChatComposer = memo(function AgentChatComposer({
             onClick={onSend}
             disabled={sendDisabled}
           >
-            Send
+            {t("agentChat.send") ?? "Send"}
           </button>
         </div>
       </div>
@@ -1218,6 +1192,7 @@ export const AgentChatPanel = ({
   onResolveExecApproval,
   onVoiceSend,
 }: AgentChatPanelProps) => {
+  const { t } = useTranslation();
   const [draftValue, setDraftValue] = useState(agent.draft);
   const [newSessionBusy, setNewSessionBusy] = useState(false);
   const [renameEditing, setRenameEditing] = useState(false);
@@ -1370,10 +1345,10 @@ export const AgentChatPanel = ({
   const allowThinking = selectedModel?.reasoning !== false;
 
   const avatarSeed = agent.avatarSeed ?? agent.agentId;
-  const avatarProfile = agent.avatarProfile ?? null;
+  const intros = (t as any)("agentChat.intros") as string[];
   const emptyStateTitle = useMemo(
-    () => resolveEmptyChatIntroMessage(agent.agentId, agent.sessionEpoch),
-    [agent.agentId, agent.sessionEpoch]
+    () => resolveEmptyChatIntroMessage(agent.agentId, agent.sessionEpoch, intros),
+    [agent.agentId, agent.sessionEpoch, intros]
   );
   const sendDisabled = !canSend || !draftValue.trim();
 
@@ -1503,7 +1478,6 @@ export const AgentChatPanel = ({
               <AgentAvatar
                 seed={avatarSeed}
                 name={agent.name}
-                avatarProfile={avatarProfile}
                 avatarUrl={agent.avatarUrl ?? null}
                 size={52}
                 isSelected={isSelected}
@@ -1586,26 +1560,14 @@ export const AgentChatPanel = ({
                 </div>
               </div>
               {renameError ? (
-                <div className="ui-text-danger mt-1 text-[11px]">{renameError}</div>
+                <div className="ui-text-danger mt-1 text-xs">{renameError}</div>
               ) : null}
             </div>
           </div>
 
           <div className="mt-0.5 flex items-center gap-2">
-            {onOpenSettings ? (
-              <button
-                className="nodrag ui-btn-icon ui-btn-icon-sm shrink-0"
-                type="button"
-                data-testid="agent-settings-toggle"
-                aria-label="Open behavior"
-                title="Open behavior"
-                onClick={onOpenSettings}
-              >
-                <ChevronRight className="h-3.5 w-3.5" />
-              </button>
-            ) : null}
             <button
-              className="nodrag inline-flex items-center whitespace-nowrap rounded border border-[color:var(--status-approval-border)] bg-[color:var(--status-approval-bg)] px-2 py-0.5 font-mono text-[9px] font-medium tracking-[0.02em] text-white transition hover:bg-[color:var(--status-approval-bg)] hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="nodrag inline-flex items-center whitespace-nowrap rounded border border-[color:var(--status-approval-border)] bg-[color:var(--status-approval-bg)] px-2 py-0.5 font-mono text-[9px] font-medium tracking-[0.02em] text-[color:var(--status-approval-fg)] transition hover:bg-[color:var(--status-approval-bg)] hover:text-[color:var(--status-approval-fg)] disabled:cursor-not-allowed disabled:opacity-40"
               type="button"
               data-testid="agent-new-session-toggle"
               aria-label="Start new session"
@@ -1617,6 +1579,17 @@ export const AgentChatPanel = ({
             >
               {newSessionBusy ? "Starting..." : "New session"}
             </button>
+            <button
+              className="nodrag ui-btn-icon"
+              style={{ "--ui-btn-icon-size": "1.25rem" } as React.CSSProperties}
+              type="button"
+              data-testid="agent-settings-toggle"
+              aria-label="Open behavior"
+              title="Behavior"
+              onClick={onOpenSettings}
+            >
+              <Cog className="h-3.5 w-3.5" />
+            </button>
           </div>
         </div>
       </div>
@@ -1626,7 +1599,6 @@ export const AgentChatPanel = ({
           agentId={agent.agentId}
           name={agent.name}
           avatarSeed={avatarSeed}
-          avatarProfile={avatarProfile}
           avatarUrl={agent.avatarUrl ?? null}
           status={agent.status}
           historyMaybeTruncated={agent.historyMaybeTruncated}

@@ -1,339 +1,250 @@
+[English](README.en.md)
+
 # Claw3D
 
-A 3D workspace for AI agents.
+为 AI Agent 打造的 3D 工作空间。
 
-> Unofficial project: Claw3D is an independent community project and is not affiliated with, endorsed by, or maintained by the OpenClaw team. OpenClaw is a separate project, and this repository is not the official OpenClaw repository.
+> 非官方项目：Claw3D 是一个独立的社区项目，不隶属于 OpenClaw 团队，也不受其支持或维护。OpenClaw 是一个独立项目，本仓库不是官​​方的 OpenClaw 仓库。
 
-Claw3D turns AI automation into a visual workplace where agents collaborate, review code, run tests, train skills, and execute tasks inside a shared 3D environment.
+Claw3D 将 AI 自动化转变为一个可视化的工作场所，Agent 在共享的 3D 环境中协作、评审代码、运行测试、训练技能以及执行任务。
 
-Built and maintained by LukeTheDev. Follow on X: [@iamlukethedev](https://x.com/iamlukethedev).
+由 LukeTheDev 构建并维护。在 X 上关注：[@iamlukethedev](https://x.com/iamlukethedev)。
 
-Think of it as:
+你可以把它想象成：
 
-An office for your AI team.
+你的 AI 团队的办公室。
 
-## What you can do with Claw3D
+## 你可以用 Claw3D 做什么
 
-• Watch your AI agents work in real time
-• Run standups with agents connected to GitHub and Jira
-• Review pull requests from inside the office
-• Monitor QA pipelines and logs
-• Train agents in the gym to develop new skills
-• Reset sessions and clean context with the janitor system
+• 实时观察 AI Agent 的工作
+• 运行连接到 GitHub 和 Jira 的 Agent 站会
+• 在办公室内评审 Pull Request
+• 监控 QA 流水线和日志
+• 在健身房 (Gym) 训练 Agent 以开发新技能
+• 使用清洁工 (Janitor) 系统重置会话并清理上下文
 
-Instead of managing automation through dashboards and logs…
+不再是通过仪表盘和日志来管理自动化……
 
-You walk through your AI workplace.
+而是漫步在你的 AI 工作空间中。
 
-[Vision](VISION.md) · [Architecture](ARCHITECTURE.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[愿景](VISION.md) · [架构](ARCHITECTURE.md) · [贡献](CONTRIBUTING.md) · [安全](SECURITY.md)
 
-## What Claw3D Is
+## Claw3D 是什么
 
-Claw3D is the visualization and interaction layer.
+OpenClaw 是智能和任务执行层。
 
-Today it can sit on top of:
+Claw3D 是可视化和交互层。
 
-- OpenClaw through the existing gateway flow
-- Hermes through the bundled WebSocket adapter
-- a direct HTTP `custom` runtime provider for orchestrator-backed stacks
-- a built-in demo gateway for office exploration without a real agent framework
+实际上，该应用为你提供了：
 
-In practical terms, this app gives you:
+- 一个实时的 `/office` 复古办公室环境，Agent 以工人的形象在共享的 3D 世界中移动
+- 一个 `/office/builder` 界面，用于编辑和发布办公室布局
+- 一个 Gateway 优先的架构，将 Agent 状态保留在 OpenClaw 中，而 Studio 存储本地 UI 偏好
 
-- a live `/office` retro-office environment where agents appear as workers moving through a shared 3D world
-- an `/office/builder` surface for editing and publishing office layouts
-- a gateway-first architecture that keeps runtime state in the connected backend while Studio stores local UI preferences
-- a backend-neutral runtime seam inside Studio so additional providers can be integrated without rewriting the whole UI
+本仓库不构建或修改 OpenClaw 运行时本身。它是连接到现有 OpenClaw Gateway 的前端和代理层。
 
-This repository does not build the upstream runtimes themselves. It is the frontend, Studio, and adapter/proxy layer that connects to a runtime speaking the Claw3D gateway protocol.
+## 为什么存在
 
-## Why It Exists
+AI 系统变得越来越强大，但它们的工作通常仍然隐藏在日志、终端输出和仪表盘之后。
 
-AI systems are becoming more capable, but their work is still usually hidden behind logs, terminal output, and dashboards.
+Claw3D 的存在是为了让 Agent 系统可见：
 
-Claw3D exists to make agent systems visible:
+- 实时检查 Agent 正在做什么
+- 在一处监控运行、审批、历史和活动
+- 通过聊天和沉浸式 UI 界面与 Agent 交互
+- 迈向一个通过空间、运动和存在感来理解 AI 系统的世界
 
-- inspect what agents are doing in real time
-- monitor runs, approvals, history, and activity from one place
-- interact with agents through chat and immersive UI surfaces
-- move toward a world where AI systems are understandable through space, motion, and presence
+有关项目的更广泛方向，请参见 [`VISION.md`](VISION.md)。
 
-For the broader direction of the project, see [`VISION.md`](VISION.md).
+## 现状
 
-## What Exists Today
+目前的方案已经包含了一个实质性的 Claw3D 界面：
 
-The current app already includes a substantial Claw3D surface:
+- 队列管理和 Agent 聊天，运行时更新从 Gateway 流式传输。
+- Agent 创建、设置、会话控制、审批以及由 Gateway 支持的配置编辑。
+- 一个带有办公桌、房间、导航、动画和事件驱动活动提示的 3D 复古办公室。
+- 用于站会、GitHub 评审流程、分析和系统监控的沉浸式操作空间。
+- 用于 Gateway 连接详细信息、关注 Agent 偏好、办公桌分配、办公室状态及相关 UI 设置的本地 Studio 持久化。
+- 一个自定义的同源 WebSocket 代理，使浏览器与 Studio 通信，Studio 与上游 OpenClaw Gateway 通信。
 
-- Fleet management and agent chat with runtime updates streamed from the gateway.
-- Agent creation, settings, session controls, approvals, and gateway-backed configuration editing.
-- A 3D retro office with desks, rooms, navigation, animations, and event-driven activity cues.
-- Immersive operational spaces for standups, GitHub review flows, analytics, and system monitoring.
-- Local Studio persistence for gateway connection details, focused-agent preferences, desk assignments, office state, and related UI settings.
-- A custom same-origin WebSocket proxy so the browser talks to Studio, and Studio talks to the upstream OpenClaw Gateway.
+## 快速开始
 
-## Quick Start
+要求：
 
-Requirements:
+- 推荐 Node.js 20+。
+- 推荐 npm 10+。
+- 一个运行中的 OpenClaw 安装，具有可访问的 Gateway URL 和 Token。
 
-- Node.js 20+ recommended.
-- npm 10+ recommended.
-- One of:
-  - a working OpenClaw installation with a reachable Gateway URL and token
-  - Hermes with the bundled adapter
-  - the built-in demo gateway for local exploration
+前提条件：
 
-Prerequisite:
+- Claw3D 不会为你安装、构建或运行 OpenClaw。
+- 在启动 Claw3D 之前，请确保你的 OpenClaw Gateway 已经在运行，并且你知道想要 Studio 使用的 Gateway URL 和 Token。
+- 本仓库仅包含 UI 和 Studio/代理层。
+- 如果你需要完整的跨机器设置指南（OpenClaw + Tailscale + Claw3D），请遵循 [`TUTORIAL.md`](TUTORIAL.md)。
 
-- Claw3D does not install or build OpenClaw or Hermes for you.
-- Before starting Claw3D against a real backend, make sure your chosen runtime is already running and that you know the gateway URL and token Studio should use.
-- For a no-framework local office demo, run the bundled demo gateway instead.
-- If you need a full cross-machine setup guide (OpenClaw + Tailscale + Claw3D), follow [`TUTORIAL.md`](TUTORIAL.md).
-
-Run from source:
+从源码运行：
 
 ```bash
-git clone <your-public-repo-url> claw3d
+git clone <你的公开仓库URL> claw3d
 cd claw3d
 npm install
 cp .env.example .env
 npm run dev
 ```
 
-Then open `http://localhost:3000` and configure the gateway URL and token in Studio.
-Studio now also persists the selected backend mode (`OpenClaw`, `Hermes`, `Demo`, or `Custom`) and
-shows the active backend reported by the connected gateway.
+然后打开 `http://localhost:3000` 并在 Studio 中配置 Gateway URL 和 Token。
 
-### Custom runtime mode
-
-If you are integrating an orchestrator-backed runtime through the `custom`
-provider seam, start your runtime first, then start Claw3D:
-
-```bash
-npm run dev
-```
-
-Then open `http://localhost:3000`, choose `Custom backend`, and point the
-upstream URL at your runtime boundary, for example:
-
-```text
-http://127.0.0.1:7770
-```
-
-Current `custom` runtime expectations:
-
-- `GET /health`
-- `GET /state`
-- `GET /registry`
-- `POST /v1/chat/completions`
-
-The browser does not call that runtime directly. Claw3D proxies the
-`custom` provider through its own same-origin route at
-`/api/runtime/custom`, which avoids browser-side CORS problems and keeps
-the provider transport separate from the OpenClaw/Hermes gateway path.
-
-### Demo mode
-
-If you only want to see the office and agent interactions without installing OpenClaw or Hermes:
-
-```bash
-npm run demo-gateway
-npm run dev
-```
-
-Then connect Studio to:
+对于同一台机器上的本地 Gateway，通常的上游 URL 为：
 
 ```text
 ws://localhost:18789
 ```
 
-This starts a mock local gateway with demo agents, streaming chat, session previews, and office presence.
-In the connect screen, choose `Demo backend`, then connect.
+## 连接方式
 
-### Hermes adapter
+Claw3D 使用两个独立的网络跳跃：
 
-If you want to use Hermes instead of OpenClaw:
+1. 浏览器 -> Studio：通过 HTTP 和 `/api/gateway/ws` 处的同源 WebSocket。
+2. Studio -> OpenClaw Gateway：通过 Studio 服务器打开的第二个 WebSocket。
 
-```bash
-npm run hermes-adapter
-npm run dev
-```
+这意味着 `ws://localhost:18789` 始终指代从 Studio 主机可访问的 Gateway，而不一定是浏览器设备可访问的。
 
-See [`docs/hermes-gateway.md`](docs/hermes-gateway.md) for setup details and current scope.
+这种设计将 Gateway 设置持久化在 Studio 主机上，并允许 Studio 在服务端打开上游连接。目前的 UI 仍会在运行时将配置的上游 URL/Token 加载到浏览器内存中，因此请将浏览器视为活动信任边界的一部分。
 
-For a local gateway on the same machine, the usual upstream URL is:
+## 常见设置
 
-```text
-ws://localhost:18789
-```
+### Gateway 本地，Studio 本地
 
-In the connect screen, choose `Hermes backend`, then connect.
+1. 使用 `npm run dev` 启动 Studio。
+2. 打开 `http://localhost:3000`。
+3. 使用 `ws://localhost:18789` 以及你的 OpenClaw Gateway Token。
 
-## How It Connects
+### Gateway 远程，Studio 本地
 
-Claw3D uses two separate network hops:
+使用你的机器可以到达的任何 Gateway URL。
 
-1. Browser -> Studio over HTTP and a same-origin WebSocket at `/api/gateway/ws`.
-2. Studio -> OpenClaw Gateway over a second WebSocket opened by the Studio server.
+推荐使用 Tailscale：
 
-That means `ws://localhost:18789` always refers to the gateway reachable from the Studio host, not necessarily from the browser device.
+1. 在 Gateway 主机上，运行 `tailscale serve --yes --bg --https 443 http://127.0.0.1:18789`。
+2. 在 Studio 中，使用 `wss://<gateway-host>.ts.net`。
 
-This design keeps gateway settings persisted on the Studio host and lets Studio open the upstream connection server-side. The current UI still loads the configured upstream URL/token into browser memory at runtime, so treat the browser as part of the active trust boundary.
+使用 SSH 的替代方案：
 
-## Common Setups
+1. 运行 `ssh -L 18789:127.0.0.1:18789 user@<gateway-host>`。
+2. 在 Studio 中，使用 `ws://localhost:18789`。
 
-### Gateway local, Studio local
+### Studio 远程，Gateway 远程
 
-1. Start Studio with `npm run dev`.
-2. Open `http://localhost:3000`.
-3. Use `ws://localhost:18789` plus your OpenClaw gateway token.
+1. 在远程主机上运行 Studio。
+2. 在私有网络或通过 Tailscale 暴露 Studio。
+3. 如果 Studio 绑定到公共主机，请设置 `STUDIO_ACCESS_TOKEN`。
+4. 在 Studio 内部配置 Gateway URL 和 Token。
 
-### Gateway remote, Studio local
+## 技术栈
 
-Use any gateway URL your machine can reach.
+- Main Web Application：Next.js App Router, React 和 TypeScript。
+- Studio-side WebSocket Proxy：自定义 Node 服务器。
+- 3D Office Experience：Three.js, React Three Fiber 和 Drei。
+- Office/Viewer-builder workflows：Phaser。
+- 测试：Vitest（单元测试）和 Playwright（端到端覆盖）。
 
-Recommended with Tailscale:
+## 配置
 
-1. On the gateway host, run `tailscale serve --yes --bg --https 443 http://127.0.0.1:18789`.
-2. In Studio, use `wss://<gateway-host>.ts.net`.
+重要的运行时路径：
 
-Alternative with SSH:
+- OpenClaw 配置：`~/.openclaw/openclaw.json`
+- Studio 设置：`~/.openclaw/claw3d/settings.json`
 
-1. Run `ssh -L 18789:127.0.0.1:18789 user@<gateway-host>`.
-2. In Studio, use `ws://localhost:18789`.
+常见环境变量：
 
-### Studio remote, Gateway remote
+- `HOST` and `PORT` 控制 Studio 服务器的绑定地址和端口。
+- `STUDIO_ACCESS_TOKEN` 在绑定到公共主机时保护 Studio。
+- `NEXT_PUBLIC_GATEWAY_URL` 在 Studio 设置为空时提供默认的上游 Gateway URL。**注意：** 这是一个构建时变量——更改需要 `npm run build` 才能生效。
+- `CLAW3D_GATEWAY_URL` and `CLAW3D_GATEWAY_TOKEN` 提供 `NEXT_PUBLIC_GATEWAY_URL` 的运行时替代方案，无需重新构建即可在服务器重启时生效。当 `openclaw.json` 不存在时，这些也用作回退。
+- `OPENCLAW_STATE_DIR` and `OPENCLAW_CONFIG_PATH` 覆盖默认的 OpenClaw 路径。
+- `OPENCLAW_GATEWAY_SSH_TARGET` 等支持需要时通过 SSH 进行高级 Gateway 主机操作。
+- `ELEVENLABS_API_KEY` 等启用语音回复集成。
 
-1. Run Studio on the remote host.
-2. Expose Studio on a private network or over Tailscale.
-3. Set `STUDIO_ACCESS_TOKEN` if Studio binds to a public host.
-4. Configure the gateway URL and token inside Studio.
+有关完整的本地开发模板，请参见 [`.env.example`](.env.example)。
 
-### Studio on LAN or Tailscale for other devices
+## 脚本
 
-1. Start Studio with `HOST=0.0.0.0` (or a specific LAN/Tailscale host).
-2. Set `STUDIO_ACCESS_TOKEN` before exposing Studio beyond localhost.
-3. Open Claw3D from the LAN/Tailscale address instead of `localhost`.
-4. If you are connecting to a remote OpenClaw gateway, remember device approval is per browser/device. A new browser may still require:
+- `npm run dev`：启动 Studio 开发服务器。
+- `npm run build`：构建生产环境 Next.js 应用。
+- `npm run start`：启动生产环境服务器。
+- `npm run lint`：运行 ESLint。
+- `npm run typecheck`：运行 TypeScript 类型检查。
+- `npm run test`：使用 Vitest 运行单元测试。
+- `npm run e2e`：运行 Playwright 测试。
+- `npm run studio:setup`：准备常见的本地 Studio 前提条件。
+- `npm run smoke:dev-server`：运行基本的开发服务器冒烟测试。
 
-```bash
-openclaw devices approve --latest
-```
+## 文档
 
-## Tech Stack
+- [`VISION.md`](VISION.md)：项目方向和长期准则。
+- [`ARCHITECTURE.md`](ARCHITECTURE.md)：系统边界、数据流和主要权衡。
+- [`TUTORIAL.md`](TUTORIAL.md)：OpenClaw + Tailscale + Claw3D 的详细分步设置。
+- [`MULTI_AGENT_BETA.md`](MULTI_AGENT_BETA.md)：远程办公室测试版设置、连接模式和限制。
+- [`CODE_DOCUMENTATION.md`](CODE_DOCUMENTATION.md)：实际代码图、扩展点和贡献者入职顺序。
+- [`CONTRIBUTING.md`](CONTRIBUTING.md)：本地工作流、测试和 PR 预期。
+- [`SUPPORT.md`](SUPPORT.md)：寻求帮助的地方及如何路由报告。
+- [`ROADMAP.md`](ROADMAP.md)：近期优先事项和对贡献者友好的工作领域。
+- [`docs/pi-chat-streaming.md`](docs/pi-chat-streaming.md)：Gateway 运行时流式传输和转录渲染。
+- [`docs/permissions-sandboxing.md`](docs/permissions-sandboxing.md)：Studio 权限和 OpenClaw 行为。
 
-- Next.js App Router, React, and TypeScript for the main web application.
-- A custom Node server for the Studio-side WebSocket proxy.
-- Three.js, React Three Fiber, and Drei for the 3D office experience.
-- Phaser for office/viewer-builder workflows and related interactive surfaces.
-- Vitest for unit tests and Playwright for end-to-end coverage.
+## 当前限制
 
-## Configuration
+- 沉浸式复古办公室 (`/office`) 和 Phaser 构建器 (`/office/builder`) 是相关但仍然独立的栈。
+- 应用将 Gateway 密钥保留在浏览器持久存储之外，但目前的连接流程仍会在运行时将上游 URL/Token 加载到浏览器内存中。
+- `SOUNDCLAW` 的本地 Spotify 身份验证目前仅存储访问令牌。尚未实现刷新令牌处理，因此在令牌过期后可能需要重复本地 Spotify 身份验证。
 
-Important runtime paths:
+## 故障排除
 
-- OpenClaw config: `~/.openclaw/openclaw.json`
-- Studio settings: `~/.openclaw/claw3d/settings.json`
+如果 UI 加载但连接失败，问题通常出在 Studio -> Gateway 端：
 
-Common environment variables:
+- 在 Studio 设置中确认上游 URL 和 Token。
+- `EPROTO` 或 `wrong version number` 通常意味着对非 TLS 端点使用了 `wss://`。
+- `401 Studio access token required` 通常意味着启用了 `STUDIO_ACCESS_TOKEN` 且请求缺少预期的 `studio_access` cookie。
+- 常见的代理错误代码包括 `studio.gateway_url_missing`, `studio.gateway_token_missing`, `studio.upstream_error` 和 `studio.upstream_closed`。
 
-- `HOST` and `PORT` control the Studio server bind address and port.
-- `STUDIO_ACCESS_TOKEN` protects Studio when binding to a public host.
-- `UPSTREAM_ALLOWLIST` restricts which upstream gateway hosts Studio may proxy to. Set this in production.
-- `CUSTOM_RUNTIME_ALLOWLIST` restricts which hosts `/api/runtime/custom` may fetch. If unset, it falls back to `UPSTREAM_ALLOWLIST`.
-- `NEXT_PUBLIC_GATEWAY_URL` provides the default upstream gateway URL when Studio settings are empty. **Note:** this is a build-time variable — changes require `npm run build` to take effect.
-- `CLAW3D_GATEWAY_URL` and `CLAW3D_GATEWAY_TOKEN` provide a runtime alternative to `NEXT_PUBLIC_GATEWAY_URL` that takes effect on server restart without a rebuild.
-- `CLAW3D_GATEWAY_ADAPTER_TYPE` can pair with `CLAW3D_GATEWAY_URL` to mark those runtime defaults as `openclaw`, `hermes`, `demo`, or `custom`.
-- If `CLAW3D_GATEWAY_URL` is not set, Studio can still surface local Hermes or demo adapter defaults from `HERMES_ADAPTER_PORT` / `DEMO_ADAPTER_PORT`.
-- OpenClaw file defaults still come from `~/.openclaw/openclaw.json` when present.
-- `OPENCLAW_STATE_DIR` and `OPENCLAW_CONFIG_PATH` override the default OpenClaw paths.
-- `OPENCLAW_GATEWAY_SSH_TARGET`, `OPENCLAW_GATEWAY_SSH_USER`, `OPENCLAW_GATEWAY_SSH_PORT`, and `OPENCLAW_GATEWAY_SSH_STRICT_HOST_KEY_CHECKING` support advanced gateway-host operations over SSH when needed.
-- `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, and `ELEVENLABS_MODEL_ID` enable voice reply integration.
+市场技能安装现在使用 Gateway 原生工作区流程，不需要在用户机器上启用 SSH。
 
-See [`.env.example`](.env.example) for the full local development template.
+### 本地主机上的 Spotify 身份验证
 
-## Scripts
+如果你正在本地测试 `SOUNDCLAW` 点唱机，且 Spotify OAuth 不接受你的 `localhost` 回调，请使用 `ngrok` 回调桥接：
 
-- `npm run dev` starts the Studio dev server.
-- `npm run hermes-adapter` starts the Hermes WebSocket adapter.
-- `npm run demo-gateway` starts the built-in mock gateway for demo mode.
-- `npm run build` builds the production Next.js app.
-- `npm run start` starts the production server.
-- `npm run lint` runs ESLint.
-- `npm run typecheck` runs TypeScript without emitting output.
-- `npm run test` runs unit tests with Vitest.
-- `npm run e2e` runs Playwright tests.
-- `npm run studio:setup` prepares common local Studio prerequisites.
-- `npm run smoke:dev-server` runs a basic dev-server smoke check.
+1. 保持 Claw3D 在本地运行（`http://localhost:3000`）。
+2. 为本地 Studio 服务器启动 `ngrok`，例如 `ngrok http 3000`。
+3. 在点唱机设置 UI 中，将你的公共 `ngrok` URL 粘贴到 `ngrok Public URL` 字段中。
+4. 在 Spotify 开发人员仪表板中，将 `https://<your-ngrok-host>/spotify/callback` 注册为重定向 URI。
+5. 从点唱机面板完成 Spotify 登录。
 
-## Documentation
+工作原理：
 
-- [`VISION.md`](VISION.md): project direction and long-term guardrails.
-- [`ARCHITECTURE.md`](ARCHITECTURE.md): system boundaries, data flow, and major trade-offs.
-- [`TUTORIAL.md`](TUTORIAL.md): detailed step-by-step setup for OpenClaw + Tailscale + Claw3D.
-- [`MULTI_AGENT_BETA.md`](MULTI_AGENT_BETA.md): remote office beta setup, connection modes, and limitations.
-- [`CODE_DOCUMENTATION.md`](CODE_DOCUMENTATION.md): practical code map, extension points, and contributor onboarding order.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): local workflow, testing, and PR expectations.
-- [`SUPPORT.md`](SUPPORT.md): where to ask for help and how to route reports.
-- [`ROADMAP.md`](ROADMAP.md): near-term priorities and contributor-friendly work areas.
-- [`docs/pi-chat-streaming.md`](docs/pi-chat-streaming.md): gateway runtime streaming and transcript rendering.
-- [`docs/permissions-sandboxing.md`](docs/permissions-sandboxing.md): Studio permissions and OpenClaw behavior.
-- [`docs/hermes-gateway.md`](docs/hermes-gateway.md): Hermes adapter setup, capabilities, and current limitations.
+- 主 Claw3D 应用留在 `localhost`，因此你的普通本地办公室状态和 Agent 状态保持不变。
+- Spotify 重定向到 `ngrok` 回调 URL。
+- 回调页面将授权码传递回打开的本地 Claw3D window。
 
-## Current Limitations
+当前本地限制：
 
-- The immersive retro office (`/office`) and the Phaser builder (`/office/builder`) are related but still separate stacks.
-- The app keeps gateway secrets out of browser persistent storage, but the current connection flow still loads the upstream URL/token into browser memory at runtime.
-- Local Spotify auth for `SOUNDCLAW` currently stores an access token only. Refresh-token handling is not implemented yet, so local Spotify auth may need to be repeated after the token expires.
+- 由于目前仅存储 Spotify 访问令牌，在本地开发过程中该令牌过期时，你可能需要重复 `ngrok` 身份验证流程。
 
-## Troubleshooting
+如果你通过 SSH 使用其他高级 Gateway 主机操作：
 
-If the UI loads but Connect fails, the problem is usually on the Studio -> Gateway side:
+- macOS：启用“系统设置” -> “通用” -> “共享” -> “远程登录”，并确保允许目标用户。
+- Windows：启用“OpenSSH Server”可选功能，启动 `sshd` 服务，并在防火墙中允许它。
+- Linux：确保 `sshd` 已安装、运行且可从 Studio 机器访问。
 
-- Confirm the upstream URL and token in Studio settings.
-- `EPROTO` or `wrong version number` usually means `wss://` was used against a non-TLS endpoint.
-- `INVALID_REQUEST` errors mentioning `minProtocol` or `maxProtocol` usually mean the gateway is too old for Claw3D protocol v3. Upgrade OpenClaw, use the Hermes adapter, or run `npm run demo-gateway`.
-- `401 Studio access token required` usually means `STUDIO_ACCESS_TOKEN` is enabled and the request is missing the expected `studio_access` cookie.
-- If `/api/runtime/custom` returns a blocked-host error in production, set `CUSTOM_RUNTIME_ALLOWLIST` or include the runtime host in `UPSTREAM_ALLOWLIST`.
-- Helpful proxy error codes include `studio.gateway_url_missing`, `studio.gateway_token_missing`, `studio.upstream_error`, and `studio.upstream_closed`.
+对于首次 SSH 连接，Claw3D 默认使用 `StrictHostKeyChecking=accept-new`，以便自动信任新主机密钥。如果你需要更严格的行为，请设置 `OPENCLAW_GATEWAY_SSH_STRICT_HOST_KEY_CHECKING=yes`。
 
-Marketplace skill installs now use a gateway-native workspace flow and do not require enabling SSH on the user machine.
+## 贡献
 
-### Spotify auth on localhost
+保持 Pull Request 聚焦，在打开 PR 之前运行 `npm run lint`, `npm run typecheck` 和 `npm run test` ，并在行为或架构发生变化时更新文档。
 
-If you are testing the `SOUNDCLAW` jukebox locally and Spotify OAuth does not accept your `localhost` callback, use an `ngrok` callback bridge:
+## AI 编辑准则
 
-1. Keep Claw3D running locally on `http://localhost:3000`.
-2. Start `ngrok` for the local Studio server, for example `ngrok http 3000`.
-3. In the jukebox setup UI, paste your public `ngrok` URL into the `ngrok Public URL` field.
-4. In the Spotify developer dashboard, register `https://<your-ngrok-host>/spotify/callback` as the redirect URI.
-5. Complete Spotify sign-in from the jukebox panel.
+如果你使用 Cursor 或其他 AI 辅助工作流，请审阅 [`.cursor/rules/claw3d-project-guardrails.mdc`](.cursor/rules/claw3d-project-guardrails.mdc) 中提交的项目准则。
 
-How it works:
+该准则文件捕获了此仓库的共享编辑预期，包括 Claw3D 与 OpenClaw 的边界、代码放置约定、Office 栈区别以及文档/测试更新预期。
 
-- The main Claw3D app stays on `localhost`, so your normal local office state and agent state remain intact.
-- Spotify redirects to the `ngrok` callback URL.
-- The callback page passes the auth code back to the open local Claw3D window.
-
-Current local limitation:
-
-- Because only the Spotify access token is stored right now, you may need to repeat the `ngrok` auth flow when that token expires during local development.
-
-If you use other advanced gateway-host operations over SSH:
-
-- macOS: enable `System Settings` -> `General` -> `Sharing` -> `Remote Login`, and make sure the target user is allowed.
-- Windows: enable the `OpenSSH Server` optional feature, start the `sshd` service, and allow it through the firewall.
-- Linux: make sure `sshd` is installed, running, and reachable from the Studio machine.
-
-For first-time SSH connections, Claw3D uses `StrictHostKeyChecking=accept-new` by default so a new host key can be trusted automatically. If you need stricter behavior, set `OPENCLAW_GATEWAY_SSH_STRICT_HOST_KEY_CHECKING=yes`, or set it to `no` only if you explicitly want to skip host key checks.
-
-## Contributing
-
-Keep pull requests focused, run `npm run lint`, `npm run typecheck`, and `npm run test` before opening a PR, and update docs when behavior or architecture changes.
-
-## AI Editing Guardrails
-
-If you use Cursor or another AI-assisted workflow, review the committed project guardrails in [`.cursor/rules/claw3d-project-guardrails.mdc`](.cursor/rules/claw3d-project-guardrails.mdc).
-
-That rule file captures the shared editing expectations for this repository, including the Claw3D-vs-OpenClaw boundary, code placement conventions, office-stack distinctions, and documentation/test update expectations.
-
-Community expectations live in [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md). Security reporting instructions live in [`SECURITY.md`](SECURITY.md).
+社区期望见 [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md)。安全报告说明见 [`SECURITY.md`](SECURITY.md)。

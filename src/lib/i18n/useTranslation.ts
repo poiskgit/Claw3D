@@ -25,15 +25,15 @@ function resolvePath(obj: any, path: string): any {
 export function useTranslation() {
   const { dict, locale, setLocale } = useI18nContext();
 
-  const t = (key: DotNestedKeys<TranslationDict>): string => {
-    let value = resolvePath(dict, key) as string | undefined;
+  const t = (key: DotNestedKeys<TranslationDict>): any => {
+    let value = resolvePath(dict, key);
     
     // Fallback to English dictionary if missing in current locale
     if (value === undefined && locale !== "en") {
       if (process.env.NODE_ENV === "development") {
         console.warn(`[i18n] Missing translation key: "${key}" for locale "${locale}"`);
       }
-      value = resolvePath(en, key) as string | undefined;
+      value = resolvePath(en, key);
     }
 
     // If still undefined, return the key (or last part of it)

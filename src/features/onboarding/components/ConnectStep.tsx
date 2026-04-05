@@ -5,6 +5,7 @@
  * layout suited for the wizard modal.
  */
 import { useState } from "react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 import { CheckCircle2, Eye, EyeOff, Wifi, WifiOff } from "lucide-react";
 import { RunningAvatarLoader } from "@/features/agents/components/RunningAvatarLoader";
 
@@ -29,6 +30,7 @@ export const ConnectStep = ({
   connecting,
   error,
 }: ConnectStepProps) => {
+  const { t } = useTranslation();
   const [showToken, setShowToken] = useState(false);
 
   if (connected) {
@@ -37,9 +39,9 @@ export const ConnectStep = ({
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-500/20">
           <CheckCircle2 className="h-6 w-6 text-amber-300" />
         </div>
-        <p className="text-sm font-semibold text-white">Connected!</p>
+        <p className="text-sm font-semibold text-white">{t("connectStep.connected")}</p>
         <p className="text-xs text-white/60">
-          Your gateway is live. Click Next to continue.
+          {t("connectStep.connectedDesc")}
         </p>
       </div>
     );
@@ -49,13 +51,13 @@ export const ConnectStep = ({
     <div className="space-y-4">
       <div className="flex items-center gap-2 rounded-lg border border-white/8 bg-white/[0.02] px-3 py-2.5">
         <WifiOff className="h-4 w-4 text-white/40" />
-        <p className="text-xs text-white/60">Not connected</p>
+        <p className="text-xs text-white/60">{t("connectStep.notConnected")}</p>
       </div>
 
       <div className="space-y-3">
         <label className="flex flex-col gap-1.5">
           <span className="text-[11px] font-medium text-white/80">
-            Gateway URL
+            {t("connectStep.gatewayUrl")}
           </span>
           <input
             className="h-9 rounded-md border border-white/10 bg-white/5 px-3 font-mono text-sm text-white outline-none placeholder:text-white/30 focus:border-amber-400/50"
@@ -69,7 +71,7 @@ export const ConnectStep = ({
 
         <label className="flex flex-col gap-1.5">
           <span className="text-[11px] font-medium text-white/80">
-            Gateway Token
+            {t("connectStep.gatewayToken")}
           </span>
           <div className="relative">
             <input
@@ -84,7 +86,7 @@ export const ConnectStep = ({
               type="button"
               className="absolute inset-y-0 right-1 my-auto flex h-7 w-7 items-center justify-center rounded text-white/50 hover:text-white"
               onClick={() => setShowToken((prev) => !prev)}
-              aria-label={showToken ? "Hide token" : "Show token"}
+              aria-label={showToken ? t("connectStep.hideToken") : t("connectStep.showToken")}
             >
               {showToken ? (
                 <EyeOff className="h-3.5 w-3.5" />
@@ -104,12 +106,12 @@ export const ConnectStep = ({
           {connecting ? (
             <>
               <RunningAvatarLoader size={16} trackWidth={32} inline />
-              Connecting…
+              {t("connectStep.connectingBtn")}
             </>
           ) : (
             <>
               <Wifi className="h-3.5 w-3.5" />
-              Connect
+              {t("connectStep.connectBtn")}
             </>
           )}
         </button>
@@ -123,16 +125,13 @@ export const ConnectStep = ({
 
       <div className="space-y-1.5 text-[11px] text-white/40">
         <p>
-          <strong className="text-white/60">Local?</strong> Use{" "}
-          <code className="text-white/50">ws://localhost:18789</code>
+          <strong className="text-white/60">{t("connectStep.hints.localLabel")}</strong> {t("connectStep.hints.localDesc")}
         </p>
         <p>
-          <strong className="text-white/60">Tailscale?</strong> Use{" "}
-          <code className="text-white/50">wss://your-host.ts.net</code>
+          <strong className="text-white/60">{t("connectStep.hints.tailscaleLabel")}</strong> {t("connectStep.hints.tailscaleDesc")}
         </p>
         <p>
-          <strong className="text-white/60">SSH tunnel?</strong> Forward port
-          18789 first, then use localhost.
+          <strong className="text-white/60">{t("connectStep.hints.sshLabel")}</strong> {t("connectStep.hints.sshDesc")}
         </p>
       </div>
     </div>

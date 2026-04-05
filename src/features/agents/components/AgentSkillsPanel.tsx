@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 import type { SkillStatusReport } from "@/lib/skills/types";
 import {
@@ -25,18 +26,19 @@ type AgentSkillsPanelProps = {
   onOpenSystemSetup: (skillKey?: string) => void;
 };
 
-const FILTERS: Array<{ id: SkillRowFilter; label: string }> = [
-  { id: "all", label: "All" },
-  { id: "ready", label: "Ready" },
-  { id: "setup-required", label: "Setup required" },
-  { id: "not-supported", label: "Not supported" },
-];
+  const { t } = useTranslation();
+  const FILTERS: Array<{ id: SkillRowFilter; label: string }> = [
+    { id: "all", label: t("skills.filters.all") },
+    { id: "ready", label: t("skills.filters.ready") },
+    { id: "setup-required", label: t("skills.filters.setupRequired") },
+    { id: "not-supported", label: t("skills.filters.notSupported") },
+  ];
 
-const DISPLAY_LABELS: Record<AgentSkillDisplayState, string> = {
-  ready: "Ready",
-  "setup-required": "Setup required",
-  "not-supported": "Not supported",
-};
+  const DISPLAY_LABELS: Record<AgentSkillDisplayState, string> = {
+    ready: t("skills.status.ready"),
+    "setup-required": t("skills.status.setupRequired"),
+    "not-supported": t("skills.status.notSupported"),
+  };
 
 const DISPLAY_CLASSES: Record<AgentSkillDisplayState, string> = {
   ready: "ui-badge-status-running",
@@ -46,22 +48,25 @@ const DISPLAY_CLASSES: Record<AgentSkillDisplayState, string> = {
 
 const resolveHint = (
   skill: SkillStatusReport["skills"][number],
-  displayState: AgentSkillDisplayState
+  displayState: AgentSkillDisplayState,
+  t: any
 ): string | null => {
   if (displayState === "ready") {
     return null;
   }
   if (displayState === "not-supported") {
     if (skill.blockedByAllowlist) {
-      return "Blocked by bundled skills policy.";
+      return t("skills.hints.blockedPolicy");
     }
-    return buildSkillMissingDetails(skill).find((line) => line.startsWith("Requires OS:")) ?? "Not supported.";
+    return (
+      buildSkillMissingDetails(skill).find((line) => line.startsWith("Requires OS:"))?.replace("Requires OS:", t("skills.hints.requiresOs").replace("{0}", "")) ?? t("skills.hints.unavailableSystem")
+    );
   }
   const readiness = deriveSkillReadinessState(skill);
   if (readiness === "disabled-globally") {
-    return "Disabled globally. Enable it in System setup.";
+    return t("skills.hints.disabledGlobally");
   }
-  return buildSkillMissingDetails(skill)[0] ?? "Requires setup in System setup.";
+  return buildSkillMissingDetails(skill)[0] ?? t("skills.hints.requiresSetup");
 };
 
 export const AgentSkillsPanel = ({
@@ -74,6 +79,7 @@ export const AgentSkillsPanel = ({
   onSetSkillEnabled,
   onOpenSystemSetup,
 }: AgentSkillsPanelProps) => {
+  const { t } = useTranslation();
   const [skillsFilter, setSkillsFilter] = useState("");
   const [rowFilter, setRowFilter] = useState<SkillRowFilter>("all");
 
@@ -142,24 +148,24 @@ export const AgentSkillsPanel = ({
   return (
     <section className="sidebar-section" data-testid="agent-settings-skills">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="sidebar-section-title">Skills</h3>
-        <div className="font-mono text-[10px] text-muted-foreground">
+        <h3 className="sidebar-section-title">{t("skills.title")}</h3>
+        <div className="font-mono text-[11px] text-muted-foreground">
           {enabledCount}/{skillEntries.length}
         </div>
       </div>
-      <div className="mt-2 text-[11px] text-muted-foreground">Skill access controls apply to this agent.</div>
+      <div className="mt-2 text-xs text-muted-foreground">{t("skills.agentAccessHint")}</div>
       {accessMode === "selected" ? (
-        <div className="mt-2 text-[10px] text-muted-foreground/80">
-          This agent is using selected skills only.
+        <div className="mt-2 text-[11px] text-muted-foreground/80">
+          {t("skills.selectedOnlyHint")}
         </div>
       ) : null}
       <div className="mt-3">
         <input
           value={skillsFilter}
           onChange={(event) => setSkillsFilter(event.target.value)}
-          placeholder="Search skills"
-          className="w-full rounded-md border border-border/60 bg-surface-1 px-3 py-2 text-[11px] text-foreground outline-none transition focus:border-border"
-          aria-label="Search skills"
+          placeholder={t("skills.searchPlaceholder")}
+          className="w-full rounded-md border border-border/60 bg-surface-1 px-3 py-2 text-xs text-foreground outline-none transition focus:border-border"
+          aria-label={t("skills.searchPlaceholder")}
         />
       </div>
       <div className="mt-2 flex flex-wrap gap-1">
@@ -181,12 +187,12 @@ export const AgentSkillsPanel = ({
           );
         })}
       </div>
-      {skillsLoading ? <div className="mt-3 text-[11px] text-muted-foreground">Loading skills...</div> : null}
+      {skillsLoading ? <div className="mt-3 text-xs text-muted-foreground">{t("skills.loading")}</div> : null}
       {!skillsLoading && skillsError ? (
         <div className="ui-alert-danger mt-3 rounded-md px-3 py-2 text-xs">{skillsError}</div>
       ) : null}
       {!skillsLoading && !skillsError && filteredRows.length === 0 ? (
-        <div className="mt-3 text-[11px] text-muted-foreground">No matching skills.</div>
+        <div className="mt-3 text-xs text-muted-foreground">{t("skills.noMatching")}</div>
       ) : null}
       {!skillsLoading && !skillsError && filteredRows.length > 0 ? (
         <div className="mt-3 flex flex-col gap-2">
@@ -202,20 +208,20 @@ export const AgentSkillsPanel = ({
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="truncate text-[11px] font-medium text-foreground/88">{entry.skill.name}</span>
+                    <span className="truncate text-xs font-medium text-foreground/88">{entry.skill.name}</span>
                     <span className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground">
                       {entry.skill.source}
                     </span>
                     <span
-                      className={`rounded border px-1.5 py-0.5 font-mono text-[10px] font-semibold ${statusClassName}`}
+                      className={`rounded border px-1.5 py-0.5 font-mono text-[11px] font-semibold ${statusClassName}`}
                     >
                       {statusLabel}
                     </span>
                   </div>
-                  <div className="mt-1 text-[10px] text-muted-foreground/70">{entry.skill.description}</div>
+                  <div className="mt-1 text-[11px] text-muted-foreground/70">{entry.skill.description}</div>
                   {entry.displayState !== "ready" ? (
-                    <div className="mt-1 text-[10px] text-muted-foreground/80">
-                      {resolveHint(entry.skill, entry.displayState)}
+                    <div className="mt-1 text-[11px] text-muted-foreground/80">
+                      {resolveHint(entry.skill, entry.displayState, t)}
                     </div>
                   ) : null}
                 </div>
@@ -223,7 +229,7 @@ export const AgentSkillsPanel = ({
                   <button
                     type="button"
                     role="switch"
-                    aria-label={`Skill ${entry.skill.name}`}
+                    aria-label={`${t("skills.title")} ${entry.skill.name}`}
                     aria-checked={entry.allowed}
                     className={`ui-switch self-start ${entry.allowed ? "ui-switch--on" : ""}`}
                     disabled={switchDisabled}
@@ -241,7 +247,7 @@ export const AgentSkillsPanel = ({
                         onOpenSystemSetup(entry.skill.skillKey);
                       }}
                     >
-                      Open System Setup
+                      {t("skills.openSystemSetupBtn")}
                     </button>
                   ) : null}
                 </div>

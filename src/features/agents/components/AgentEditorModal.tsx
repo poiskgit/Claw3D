@@ -128,7 +128,7 @@ export const AgentEditorModal = ({
       className="fixed inset-0 z-[145] flex items-center justify-center bg-background/88 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={`Edit ${agent.name}`}
+      aria-label={t("agentEditor.ariaLabel").replace("{0}", agent.name)}
       onClick={onClose}
     >
       <div
@@ -139,7 +139,7 @@ export const AgentEditorModal = ({
           type="button"
           onClick={onClose}
           className="absolute -right-3 -top-3 z-20 inline-flex h-10 w-10 items-center justify-center rounded-full border border-border/50 bg-background/92 text-muted-foreground shadow-lg transition-colors hover:text-foreground"
-          aria-label="Close agent editor"
+          aria-label={t("agentEditor.closeAriaLabel")}
         >
           <X className="h-4 w-4" />
         </button>

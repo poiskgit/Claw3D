@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 import type { SkillStatusEntry } from "@/lib/skills/types";
 import {
@@ -29,14 +30,15 @@ type AgentSkillsSetupModalProps = {
   onSaveSkillApiKey: (skillKey: string) => Promise<void> | void;
 };
 
-const READINESS_LABELS = {
-  ready: "Ready",
-  "needs-setup": "Needs setup",
-  unavailable: "Unavailable",
-  "disabled-globally": "Disabled globally",
-} as const;
+  const { t } = useTranslation();
+  const READINESS_LABELS = {
+    ready: t("skills.status.ready"),
+    "needs-setup": t("skills.status.setupRequired"),
+    unavailable: t("skills.status.unavailable"),
+    "disabled-globally": t("skills.status.disabledGlobally"),
+  } as const;
 
-const READINESS_CLASSES = {
+  const READINESS_CLASSES = {
   ready: "ui-badge-status-running",
   "needs-setup": "ui-badge-status-error",
   unavailable: "ui-badge-status-error",
@@ -93,7 +95,7 @@ export const AgentSkillsSetupModal = ({
       className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 p-4"
       role="dialog"
       aria-modal="true"
-      aria-label={`Setup ${skill.name}`}
+      aria-label={`${t("skills.setupBtn")} ${skill.name}`}
       onClick={onClose}
     >
       <div
@@ -103,7 +105,7 @@ export const AgentSkillsSetupModal = ({
         <div className="flex items-start justify-between gap-3 px-6 py-5">
           <div className="min-w-0">
             <div className="text-[11px] font-medium tracking-[0.01em] text-muted-foreground/80">
-              System setup
+              {t("skills.systemTitle")}
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-2">
               <span className="text-base font-semibold text-foreground">{skill.name}</span>
@@ -114,7 +116,7 @@ export const AgentSkillsSetupModal = ({
               </span>
             </div>
             <div className="mt-2 text-[10px] text-muted-foreground/80">
-              Changes affect all agents on this gateway.
+              {t("skills.systemAffectsAllHint")}
             </div>
           </div>
           <button
@@ -122,7 +124,7 @@ export const AgentSkillsSetupModal = ({
             className="sidebar-btn-ghost px-3 font-mono text-[10px] font-semibold tracking-[0.06em]"
             onClick={onClose}
           >
-            Close
+            {t("common.close")}
           </button>
         </div>
         <div className="space-y-3 px-6 pb-3 text-[11px] text-muted-foreground">
@@ -159,7 +161,7 @@ export const AgentSkillsSetupModal = ({
                   void onInstallSkill(skill.skillKey, skill.name, installOption.id);
                 }}
               >
-                {busyForSkill ? "Working..." : installOption.label}
+                {busyForSkill ? t("skills.working") : installOption.label}
               </button>
             ) : null}
             <button
@@ -171,10 +173,10 @@ export const AgentSkillsSetupModal = ({
               }}
             >
               {busyForSkill
-                ? "Working..."
+                ? t("skills.working")
                 : skill.disabled
-                  ? "Enable globally"
-                  : "Disable globally"}
+                  ? t("skills.enableGlobally")
+                  : t("skills.disableGlobally")}
             </button>
             {skill.primaryEnv ? (
               <>
@@ -186,8 +188,8 @@ export const AgentSkillsSetupModal = ({
                   }}
                   disabled={anySkillBusy}
                   className="w-full rounded-md border border-border/60 bg-surface-1 px-3 py-2 text-[10px] text-foreground outline-none transition focus:border-border"
-                  placeholder={`Set ${skill.primaryEnv}`}
-                  aria-label={`API key for ${skill.name}`}
+                  placeholder={t("skills.setApiKey").replace("{0}", skill.primaryEnv)}
+                  aria-label={`${t("skills.setApiKey").replace("{0}", "")} ${skill.name}`}
                 />
                 <button
                   type="button"
@@ -200,7 +202,7 @@ export const AgentSkillsSetupModal = ({
                     void onSaveSkillApiKey(skill.skillKey);
                   }}
                 >
-                  {busyForSkill ? "Working..." : `Save ${skill.primaryEnv}`}
+                  {busyForSkill ? t("skills.working") : t("skills.saveApiKey").replace("{0}", skill.primaryEnv)}
                 </button>
               </>
             ) : null}
@@ -211,7 +213,7 @@ export const AgentSkillsSetupModal = ({
                 disabled={anySkillBusy}
                 onClick={() => {
                   const approved = window.confirm(
-                    `Remove ${skill.name} from the gateway for all agents?`
+                    t("skills.removeConfirm").replace("{0}", skill.name)
                   );
                   if (!approved) {
                     return;
@@ -224,7 +226,7 @@ export const AgentSkillsSetupModal = ({
                   onClose();
                 }}
               >
-                Remove for all agents
+                {t("skills.removeForAll")}
               </button>
             ) : null}
           </div>
