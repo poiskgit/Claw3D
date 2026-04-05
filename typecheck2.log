@@ -1,0 +1,6 @@
+
+> claw3d@0.1.0 typecheck
+> tsc --noEmit
+
+src/lib/i18n/dictionaries/en.ts(408,14): error TS2741: Property 'agentSettings' is missing in type '{ common: { loading: string; save: string; cancel: string; delete: string; edit: string; close: string; error: string; }; hqSidebar: { collapseHq: string; openHq: string; marketplace: string; analytics: string; ... 6 more ...; tabs: { ...; }; }; ... 11 more ...; connectStep: { ...; }; }' but required in type 'TranslationDict'.
+src/lib/i18n/dictionaries/zh.ts(3,14): error TS2741: Property 'agentSettings' is missing in type '{ common: { loading: string; save: string; cancel: string; delete: string; edit: string; close: string; error: string; }; hqSidebar: { collapseHq: string; openHq: string; marketplace: string; analytics: string; ... 6 more ...; tabs: { ...; }; }; ... 11 more ...; connectStep: { ...; }; }' but required in type 'TranslationDict'.

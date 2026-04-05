@@ -8,6 +8,7 @@ import { useTranslation } from "@/lib/i18n/useTranslation";
 export const WelcomeStep = () => {
   const { t } = useTranslation();
 
+
   const features = [
     {
       id: "watch",

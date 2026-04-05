@@ -6,20 +6,72 @@ import type {
 } from "@/lib/office/standup/types";
 import type { AgentAvatarProfile } from "@/lib/avatars/profile";
 import { normalizeAgentAvatarProfile } from "@/lib/avatars/profile";
+import {
+  defaultTaskBoardPreference,
+  isTaskBoardSource,
+  isTaskBoardStatus,
+  type TaskBoardCard,
+  type TaskBoardPreference,
+  type TaskBoardPreferencePatch,
+} from "@/features/office/tasks/types";
 
 export type StudioGatewaySettings = {
   url: string;
   token: string;
+  adapterType: StudioGatewayAdapterType;
+  profiles?: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>>;
+  lastKnownGood?: StudioGatewayConnectionState;
+};
+
+export type StudioGatewayAdapterType = "openclaw" | "hermes" | "demo" | "custom";
+
+export type StudioGatewayProfile = {
+  url: string;
+  token: string;
+};
+
+export type StudioGatewayConnectionState = {
+  url: string;
+  token: string;
+  adapterType: StudioGatewayAdapterType;
 };
 
 export type StudioGatewaySettingsPublic = {
   url: string;
   tokenConfigured: boolean;
+  adapterType: StudioGatewayAdapterType;
+  profiles?: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfilePublic>>;
+  lastKnownGood?: StudioGatewayConnectionStatePublic;
+};
+
+export type StudioGatewayProfilePublic = {
+  url: string;
+  tokenConfigured: boolean;
+};
+
+export type StudioGatewayConnectionStatePublic = {
+  url: string;
+  tokenConfigured: boolean;
+  adapterType: StudioGatewayAdapterType;
 };
 
 export type StudioGatewaySettingsPatch = {
   url?: string | null;
   token?: string | null;
+  adapterType?: StudioGatewayAdapterType | null;
+  profiles?: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfilePatch | null>> | null;
+  lastKnownGood?: StudioGatewayConnectionStatePatch | null;
+};
+
+export type StudioGatewayProfilePatch = {
+  url?: string | null;
+  token?: string | null;
+};
+
+export type StudioGatewayConnectionStatePatch = {
+  url?: string | null;
+  token?: string | null;
+  adapterType?: StudioGatewayAdapterType | null;
 };
 
 export type FocusFilter = "all" | "running" | "approvals";
@@ -133,6 +185,10 @@ export type StandupJiraConfigPublic = Omit<StandupJiraConfig, "apiToken"> & {
   apiTokenConfigured: boolean;
 };
 
+export type StudioTaskBoardPreference = TaskBoardPreference;
+export type StudioTaskBoardPreferencePublic = TaskBoardPreference;
+export type StudioTaskBoardPreferencePatch = TaskBoardPreferencePatch;
+
 export type StudioSettings = {
   version: 1;
   gateway: StudioGatewaySettings | null;
@@ -143,12 +199,14 @@ export type StudioSettings = {
   voiceReplies: Record<string, StudioVoiceRepliesPreference>;
   office: Record<string, StudioOfficePreference>;
   standup?: Record<string, StudioStandupPreference>;
+  taskBoard?: Record<string, StudioTaskBoardPreference>;
 };
 
 export type StudioSettingsPublic = Omit<StudioSettings, "gateway" | "office" | "standup"> & {
   gateway: StudioGatewaySettingsPublic | null;
   office: Record<string, StudioOfficePreferencePublic>;
   standup?: Record<string, StudioStandupPreferencePublic>;
+  taskBoard?: Record<string, StudioTaskBoardPreferencePublic>;
 };
 
 export type StudioSettingsPatch = {
@@ -160,6 +218,7 @@ export type StudioSettingsPatch = {
   voiceReplies?: Record<string, StudioVoiceRepliesPreferencePatch | null>;
   office?: Record<string, StudioOfficePreferencePatch | null>;
   standup?: Record<string, StudioStandupPreferencePatch | null>;
+  taskBoard?: Record<string, StudioTaskBoardPreferencePatch | null>;
 };
 
 const SETTINGS_VERSION = 1 as const;
@@ -193,7 +252,7 @@ const normalizeGatewayUrl = (value: unknown) => {
 };
 
 const normalizeGatewayKey = (value: unknown) => {
-  const key = coerceString(value);
+  const key = normalizeGatewayUrl(value);
   return key ? key : null;
 };
 
@@ -299,6 +358,9 @@ export const defaultStudioStandupPreference = (): StudioStandupPreference => ({
   manualByAgentId: {},
 });
 
+export const defaultStudioTaskBoardPreference =
+  (): StudioTaskBoardPreference => defaultTaskBoardPreference();
+
 const normalizeVoiceReplySpeed = (value: unknown, fallback: number = 1): number => {
   if (typeof value !== "number" || !Number.isFinite(value)) return fallback;
   return Math.min(1.2, Math.max(0.7, value));
@@ -312,6 +374,70 @@ const normalizeOptionalIsoString = (
   if (typeof value !== "string") return fallback;
   const trimmed = value.trim();
   return trimmed ? trimmed : null;
+};
+
+const normalizeTaskBoardNotes = (value: unknown, fallback: string[] = []) => {
+  if (!Array.isArray(value)) return [...fallback];
+  return value
+    .filter((entry): entry is string => typeof entry === "string")
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .slice(0, 24);
+};
+
+const normalizeTaskBoardCard = (
+  value: unknown,
+  fallback?: TaskBoardCard
+): TaskBoardCard => {
+  const nowIso = new Date().toISOString();
+  const record = isRecord(value) ? value : {};
+  return {
+    id: coerceString(record.id) || fallback?.id || "",
+    title: coerceString(record.title) || fallback?.title || "Untitled task",
+    description: coerceString(record.description) || fallback?.description || "",
+    status: isTaskBoardStatus(record.status) ? record.status : (fallback?.status ?? "todo"),
+    source: isTaskBoardSource(record.source)
+      ? record.source
+      : (fallback?.source ?? "claw3d_manual"),
+    sourceEventId:
+      normalizeOptionalIsoString(record.sourceEventId, fallback?.sourceEventId ?? null) ??
+      null,
+    assignedAgentId:
+      normalizeSelectedAgentId(record.assignedAgentId, fallback?.assignedAgentId ?? null) ?? null,
+    createdAt:
+      normalizeOptionalIsoString(record.createdAt, fallback?.createdAt ?? nowIso) ?? nowIso,
+    updatedAt:
+      normalizeOptionalIsoString(record.updatedAt, fallback?.updatedAt ?? nowIso) ?? nowIso,
+    playbookJobId:
+      normalizeSelectedAgentId(record.playbookJobId, fallback?.playbookJobId ?? null) ?? null,
+    runId: normalizeSelectedAgentId(record.runId, fallback?.runId ?? null) ?? null,
+    channel: normalizeSelectedAgentId(record.channel, fallback?.channel ?? null) ?? null,
+    externalThreadId:
+      normalizeSelectedAgentId(record.externalThreadId, fallback?.externalThreadId ?? null) ??
+      null,
+    lastActivityAt:
+      normalizeOptionalIsoString(record.lastActivityAt, fallback?.lastActivityAt ?? null) ?? null,
+    notes: normalizeTaskBoardNotes(record.notes, fallback?.notes ?? []),
+    isArchived:
+      typeof record.isArchived === "boolean" ? record.isArchived : (fallback?.isArchived ?? false),
+    isInferred:
+      typeof record.isInferred === "boolean" ? record.isInferred : (fallback?.isInferred ?? false),
+  };
+};
+
+const normalizeTaskBoardPreference = (
+  value: unknown,
+  fallback: StudioTaskBoardPreference = defaultStudioTaskBoardPreference()
+): StudioTaskBoardPreference => {
+  const record = isRecord(value) ? value : {};
+  const rawCards = Array.isArray(record.cards) ? record.cards : fallback.cards;
+  return {
+    cards: rawCards
+      .map((entry) => normalizeTaskBoardCard(entry))
+      .filter((entry) => entry.id.length > 0),
+    selectedCardId:
+      normalizeSelectedAgentId(record.selectedCardId, fallback.selectedCardId) ?? null,
+  };
 };
 
 const DEFAULT_OFFICE_TITLE = "Luke Headquarters";
@@ -525,6 +651,19 @@ const normalizeStandup = (
   return standup;
 };
 
+const normalizeTaskBoard = (
+  value: unknown
+): Record<string, StudioTaskBoardPreference> => {
+  if (!isRecord(value)) return {};
+  const taskBoard: Record<string, StudioTaskBoardPreference> = {};
+  for (const [gatewayKeyRaw, taskBoardRaw] of Object.entries(value)) {
+    const gatewayKey = normalizeGatewayKey(gatewayKeyRaw);
+    if (!gatewayKey) continue;
+    taskBoard[gatewayKey] = normalizeTaskBoardPreference(taskBoardRaw);
+  }
+  return taskBoard;
+};
+
 const normalizeFocusedPreference = (
   value: unknown,
   fallback: StudioFocusedPreference = defaultFocusedPreference()
@@ -545,7 +684,49 @@ const normalizeGatewaySettings = (value: unknown): StudioGatewaySettings | null 
   const url = normalizeGatewayUrl(value.url);
   if (!url) return null;
   const token = coerceString(value.token);
+  const adapterType = normalizeGatewayAdapterType(value.adapterType);
+  const profiles = normalizeGatewayProfiles(value.profiles);
+  const lastKnownGood = normalizeGatewayConnectionState(value.lastKnownGood);
+  return {
+    url,
+    token,
+    adapterType,
+    ...(profiles ? { profiles } : {}),
+    ...(lastKnownGood ? { lastKnownGood } : {}),
+  };
+};
+
+const normalizeGatewayProfile = (value: unknown): StudioGatewayProfile | null => {
+  if (!isRecord(value)) return null;
+  const url = normalizeGatewayUrl(value.url);
+  if (!url) return null;
+  const token = coerceString(value.token);
   return { url, token };
+};
+
+const normalizeGatewayProfiles = (
+  value: unknown
+): Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>> | undefined => {
+  if (!isRecord(value)) return undefined;
+  const profiles: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>> = {};
+  for (const adapterType of ["openclaw", "hermes", "demo", "custom"] as const) {
+    const normalized = normalizeGatewayProfile(value[adapterType]);
+    if (normalized) {
+      profiles[adapterType] = normalized;
+    }
+  }
+  return Object.keys(profiles).length > 0 ? profiles : undefined;
+};
+
+const normalizeGatewayConnectionState = (
+  value: unknown
+): StudioGatewayConnectionState | null => {
+  if (!isRecord(value)) return null;
+  const url = normalizeGatewayUrl(value.url);
+  if (!url) return null;
+  const token = coerceString(value.token);
+  const adapterType = normalizeGatewayAdapterType(value.adapterType);
+  return { url, token, adapterType };
 };
 
 const mergeGatewaySettings = (
@@ -558,10 +739,95 @@ const mergeGatewaySettings = (
   if (!nextUrl) return null;
   const nextToken =
     patch.token === undefined ? current?.token ?? "" : coerceString(patch.token);
+  const nextAdapterType =
+    patch.adapterType === undefined
+      ? current?.adapterType ?? "openclaw"
+      : normalizeGatewayAdapterType(patch.adapterType);
+  const nextProfiles = mergeGatewayProfiles(current?.profiles, patch.profiles);
+  const nextLastKnownGood = mergeGatewayConnectionState(
+    current?.lastKnownGood ?? null,
+    patch.lastKnownGood
+  );
   return {
     url: nextUrl,
     token: nextToken,
+    adapterType: nextAdapterType,
+    ...(nextProfiles ? { profiles: nextProfiles } : {}),
+    ...(nextLastKnownGood ? { lastKnownGood: nextLastKnownGood } : {}),
   };
+};
+
+const mergeGatewayProfiles = (
+  current: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>> | undefined,
+  patch:
+    | Partial<Record<StudioGatewayAdapterType, StudioGatewayProfilePatch | null>>
+    | null
+    | undefined,
+): Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>> | undefined => {
+  if (patch === null) return undefined;
+  if (patch === undefined) return current;
+  const next: Partial<Record<StudioGatewayAdapterType, StudioGatewayProfile>> = {
+    ...(current ?? {}),
+  };
+  for (const adapterType of ["openclaw", "hermes", "demo", "custom"] as const) {
+    const profilePatch = patch[adapterType];
+    if (profilePatch === undefined) continue;
+    if (profilePatch === null) {
+      delete next[adapterType];
+      continue;
+    }
+    const existing = current?.[adapterType] ?? null;
+    const nextUrl =
+      profilePatch.url === undefined
+        ? existing?.url ?? ""
+        : normalizeGatewayUrl(profilePatch.url);
+    if (!nextUrl) {
+      delete next[adapterType];
+      continue;
+    }
+    const nextToken =
+      profilePatch.token === undefined ? existing?.token ?? "" : coerceString(profilePatch.token);
+    next[adapterType] = { url: nextUrl, token: nextToken };
+  }
+  return Object.keys(next).length > 0 ? next : undefined;
+};
+
+const mergeGatewayConnectionState = (
+  current: StudioGatewayConnectionState | null,
+  patch: StudioGatewayConnectionStatePatch | null | undefined
+): StudioGatewayConnectionState | null => {
+  if (patch === null) return null;
+  if (patch === undefined) return current;
+  const nextUrl =
+    patch.url === undefined ? current?.url ?? "" : normalizeGatewayUrl(patch.url);
+  if (!nextUrl) return null;
+  const nextToken =
+    patch.token === undefined ? current?.token ?? "" : coerceString(patch.token);
+  const nextAdapterType =
+    patch.adapterType === undefined
+      ? current?.adapterType ?? "openclaw"
+      : normalizeGatewayAdapterType(patch.adapterType);
+  return {
+    url: nextUrl,
+    token: nextToken,
+    adapterType: nextAdapterType,
+  };
+};
+
+const normalizeGatewayAdapterType = (
+  value: unknown,
+  fallback: StudioGatewayAdapterType = "openclaw"
+): StudioGatewayAdapterType => {
+  const adapterType = coerceString(value).toLowerCase();
+  if (
+    adapterType === "demo" ||
+    adapterType === "hermes" ||
+    adapterType === "openclaw" ||
+    adapterType === "custom"
+  ) {
+    return adapterType;
+  }
+  return fallback;
 };
 
 const normalizeFocused = (value: unknown): Record<string, StudioFocusedPreference> => {
@@ -761,6 +1027,7 @@ export const defaultStudioSettings = (): StudioSettings => ({
   voiceReplies: {},
   office: {},
   standup: {},
+  taskBoard: {},
 });
 
 export const sanitizeStudioGatewaySettings = (
@@ -770,6 +1037,25 @@ export const sanitizeStudioGatewaySettings = (
   return {
     url: value.url,
     tokenConfigured: value.token.length > 0,
+    adapterType: value.adapterType,
+    profiles: value.profiles
+      ? Object.fromEntries(
+          Object.entries(value.profiles).map(([adapterType, profile]) => [
+            adapterType,
+            {
+              url: profile.url,
+              tokenConfigured: profile.token.length > 0,
+            },
+          ]),
+        )
+      : undefined,
+    lastKnownGood: value.lastKnownGood
+      ? {
+          url: value.lastKnownGood.url,
+          tokenConfigured: value.lastKnownGood.token.length > 0,
+          adapterType: value.lastKnownGood.adapterType,
+        }
+      : undefined,
   };
 };
 
@@ -786,6 +1072,13 @@ export const sanitizeStandupPreference = (
 ): StudioStandupPreferencePublic => ({
   ...value,
   jira: sanitizeStandupJiraConfig(value.jira),
+});
+
+export const sanitizeTaskBoardPreference = (
+  value: StudioTaskBoardPreference
+): StudioTaskBoardPreferencePublic => ({
+  cards: value.cards.map((card) => ({ ...card, notes: [...card.notes] })),
+  selectedCardId: value.selectedCardId,
 });
 
 export const sanitizeStudioSettings = (
@@ -805,6 +1098,12 @@ export const sanitizeStudioSettings = (
       sanitizeStandupPreference(preference),
     ]),
   ),
+  taskBoard: Object.fromEntries(
+    Object.entries(value.taskBoard ?? {}).map(([gatewayKey, preference]) => [
+      gatewayKey,
+      sanitizeTaskBoardPreference(preference),
+    ]),
+  ),
 });
 
 export const normalizeStudioSettings = (raw: unknown): StudioSettings => {
@@ -817,6 +1116,7 @@ export const normalizeStudioSettings = (raw: unknown): StudioSettings => {
   const voiceReplies = normalizeVoiceReplies(raw.voiceReplies);
   const office = normalizeOffice(raw.office);
   const standup = normalizeStandup(raw.standup);
+  const taskBoard = normalizeTaskBoard(raw.taskBoard);
   return {
     version: SETTINGS_VERSION,
     gateway,
@@ -827,6 +1127,7 @@ export const normalizeStudioSettings = (raw: unknown): StudioSettings => {
     voiceReplies,
     office,
     standup,
+    taskBoard,
   };
 };
 
@@ -843,6 +1144,7 @@ export const mergeStudioSettings = (
   const nextVoiceReplies = { ...current.voiceReplies };
   const nextOffice = { ...current.office };
   const nextStandup = { ...(current.standup ?? {}) };
+  const nextTaskBoard = { ...(current.taskBoard ?? {}) };
   if (patch.focused) {
     for (const [keyRaw, value] of Object.entries(patch.focused)) {
       const key = normalizeGatewayKey(keyRaw);
@@ -1013,6 +1315,28 @@ export const mergeStudioSettings = (
       );
     }
   }
+  if (patch.taskBoard) {
+    for (const [gatewayKeyRaw, taskBoardPatch] of Object.entries(patch.taskBoard)) {
+      const gatewayKey = normalizeGatewayKey(gatewayKeyRaw);
+      if (!gatewayKey) continue;
+      if (taskBoardPatch === null) {
+        delete nextTaskBoard[gatewayKey];
+        continue;
+      }
+      const fallback =
+        nextTaskBoard[gatewayKey] ?? defaultStudioTaskBoardPreference();
+      nextTaskBoard[gatewayKey] = normalizeTaskBoardPreference(
+        {
+          ...fallback,
+          ...taskBoardPatch,
+          cards: Array.isArray(taskBoardPatch.cards)
+            ? taskBoardPatch.cards
+            : fallback.cards,
+        },
+        fallback
+      );
+    }
+  }
   return {
     version: SETTINGS_VERSION,
     gateway: nextGateway ?? null,
@@ -1023,6 +1347,7 @@ export const mergeStudioSettings = (
     voiceReplies: nextVoiceReplies,
     office: nextOffice,
     standup: nextStandup,
+    taskBoard: nextTaskBoard,
   };
 };
 
@@ -1108,4 +1433,13 @@ export const resolveStandupPreference = (
   const gatewayKey = normalizeGatewayKey(gatewayUrl);
   if (!gatewayKey) return defaultStudioStandupPreference();
   return settings.standup?.[gatewayKey] ?? defaultStudioStandupPreference();
+};
+
+export const resolveTaskBoardPreference = (
+  settings: StudioSettings | StudioSettingsPublic,
+  gatewayUrl: string
+): StudioTaskBoardPreference => {
+  const gatewayKey = normalizeGatewayKey(gatewayUrl);
+  if (!gatewayKey) return defaultStudioTaskBoardPreference();
+  return settings.taskBoard?.[gatewayKey] ?? defaultStudioTaskBoardPreference();
 };

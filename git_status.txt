@@ -1,0 +1,27 @@
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   src/app/globals.css
+	modified:   src/features/agents/components/AgentChatPanel.tsx
+	modified:   src/features/agents/components/GatewayConnectScreen.tsx
+	modified:   src/features/agents/components/inspect/AgentSettingsPanel.tsx
+	modified:   src/features/office/components/panels/AnalyticsPanel.tsx
+	modified:   src/features/office/components/panels/HistoryPanel.tsx
+	modified:   src/features/office/components/panels/InboxPanel.tsx
+	modified:   src/features/office/components/panels/PlaybooksPanel.tsx
+	modified:   src/features/onboarding/components/ConnectStep.tsx
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	extract_keys.js
+	git_status.txt
+	head_stat.txt
+	missing_keys.txt
+	temp_base_en.ts
+	typecheck.log
+
+no changes added to commit (use "git add" and/or "git commit -a")

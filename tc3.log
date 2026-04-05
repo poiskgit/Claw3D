@@ -1,0 +1,462 @@
+
+> claw3d@0.1.0 typecheck
+> tsc --noEmit
+
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(9,3): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(9,6): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(9,35): error TS1005: ';' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(10,6): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(10,36): error TS1005: ';' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(16,1): error TS1109: Expression expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(16,3): error TS1434: Unexpected keyword or identifier.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(51,13): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(51,15): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(51,50): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(51,52): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(58,13): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(58,15): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(58,52): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(58,54): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(95,9): error TS1005: ':' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(95,33): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(98,14): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(98,16): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(98,46): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(98,47): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(99,1): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(99,2): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(101,43): error TS1109: Expression expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(102,3): error TS1434: Unexpected keyword or identifier.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(102,47): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(102,74): error TS1109: Expression expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(103,2): error TS1128: Declaration or statement expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(198,14): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(198,15): error TS1005: '...' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(216,58): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(216,85): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(216,87): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(254,19): error TS1434: Unexpected keyword or identifier.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(346,34): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(346,95): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(348,38): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(348,103): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(407,38): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(407,68): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(407,69): error TS1005: ':' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(414,35): error TS1434: Unexpected keyword or identifier.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(417,40): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(417,70): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(417,71): error TS1005: ':' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(420,65): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(420,95): error TS1005: ',' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(455,42): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(455,103): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(457,46): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(457,111): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(475,41): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(475,89): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(477,45): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(477,88): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(479,35): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(613,66): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(613,133): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(617,66): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(617,137): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(644,33): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(644,81): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(650,39): error TS1005: '}' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(650,92): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(657,21): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(660,21): error TS1381: Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(699,20): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(699,21): error TS1005: '...' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(699,53): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(699,80): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(708,21): error TS1434: Unexpected keyword or identifier.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(713,18): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(713,19): error TS1005: '...' expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(713,51): error TS1003: Identifier expected.
+src/features/office/components/panels/SkillsMarketplacePanel.tsx(713,78): error TS1382: Unexpected token. Did you mean `{'>'}` or `&gt;`?
+src/lib/i18n/dictionaries/en.ts(189,4): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(192,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(193,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(194,11): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(195,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(196,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(197,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(198,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(198,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(201,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(202,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(203,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(204,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(205,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(206,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(207,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(208,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(209,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(210,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(212,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(213,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(214,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(215,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(215,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(216,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(219,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(220,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(221,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(222,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(223,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(224,50): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(224,76): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(225,55): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(225,77): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(226,53): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(226,89): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(227,43): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(227,66): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(228,51): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(228,84): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(229,48): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(229,69): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(230,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(232,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(233,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(234,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(235,48): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(235,107): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(236,49): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(236,107): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(237,46): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(237,108): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(238,48): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(238,105): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(239,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(240,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(243,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(244,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(245,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(246,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(247,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(248,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(249,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(250,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(251,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(252,42): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(252,67): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(253,38): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(253,61): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(254,34): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(254,56): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(255,38): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(255,67): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(256,34): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(256,59): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(257,36): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(257,58): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(258,38): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(258,63): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(259,44): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(259,69): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(260,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(261,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(264,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(265,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(266,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(267,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(268,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(269,23): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(270,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(271,22): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(272,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(273,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(274,22): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(275,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(276,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(277,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(278,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(279,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(280,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(281,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(282,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(284,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(285,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(286,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(287,22): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(288,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(289,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(290,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(291,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(292,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(293,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(293,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(296,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(297,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(298,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(298,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(301,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(302,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(303,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(304,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(305,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(306,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(307,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(308,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(308,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(311,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(312,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(313,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(314,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(315,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(316,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(317,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(318,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(319,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(319,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(322,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(323,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(324,23): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(325,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(325,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(326,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(329,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(330,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(331,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(332,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(333,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(334,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(335,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(336,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(337,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(338,22): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(339,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(340,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(341,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(342,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(343,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(344,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(345,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(345,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(348,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(349,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(350,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(351,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(352,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(353,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(354,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(355,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(356,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(357,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(358,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(359,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(360,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(361,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(362,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(363,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(364,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(365,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(366,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(368,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(369,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(369,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(371,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(372,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(373,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(374,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(375,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(376,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(377,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(378,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(379,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(380,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(381,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(382,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(383,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(384,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(385,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(386,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(387,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(388,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(389,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(390,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(391,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(391,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(396,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(397,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(398,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(399,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(399,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(401,8): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(402,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(403,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(404,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(405,26): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(406,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(407,23): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(408,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(409,24): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(410,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(411,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(412,9): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(413,27): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(414,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(414,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(417,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(418,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(419,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(420,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(421,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(422,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(423,26): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(424,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(425,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(426,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(427,28): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(428,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(429,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(430,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(431,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(432,22): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(433,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(434,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(435,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(436,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(437,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(437,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(440,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(441,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(442,8): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(443,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(444,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(445,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(446,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(447,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(449,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(450,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(451,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(452,23): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(453,22): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(454,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(455,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(456,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(456,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(458,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(459,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(460,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(461,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(462,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(463,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(464,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(465,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(466,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(467,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(468,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(469,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(470,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(471,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(472,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(473,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(474,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(476,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(477,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(478,24): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(479,23): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(480,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(481,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(482,25): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(483,24): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(484,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(485,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(486,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(487,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(488,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(488,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(489,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(492,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(493,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(494,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(495,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(496,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(497,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(499,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(500,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(501,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(501,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(503,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(504,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(505,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(506,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(507,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(508,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(509,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(509,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(512,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(513,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(514,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(515,8): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(516,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(516,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(519,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(520,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(521,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(522,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(523,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(524,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(525,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(526,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(527,11): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(528,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(529,11): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(530,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(531,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(532,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(533,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(534,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(535,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(536,22): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(537,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(538,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(539,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(540,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(541,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(542,23): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(543,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(544,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(545,26): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(546,24): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(547,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(548,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(549,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(550,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(551,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(552,13): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(553,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(554,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(555,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(556,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(557,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(558,12): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(559,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(560,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(561,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(562,19): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(563,3): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(563,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(566,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(567,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(568,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(569,17): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(570,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(571,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(572,18): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(573,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(574,10): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(576,16): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(577,21): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(578,20): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(579,15): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(580,14): error TS1005: ';' expected.
+src/lib/i18n/dictionaries/en.ts(581,5): error TS1109: Expression expected.
+src/lib/i18n/dictionaries/en.ts(581,6): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(582,4): error TS1128: Declaration or statement expected.
+src/lib/i18n/dictionaries/en.ts(583,1): error TS1128: Declaration or statement expected.

@@ -1,0 +1,22 @@
+commit f872f79e4502ab6fc2c188674a310816c9330392
+Author: poiskgit <shikang911@gmail.com>
+Date:   Sun Apr 5 23:26:57 2026 +0800
+
+    feat: implement i18n localization system and integrate translation hooks across office and onboarding features
+
+ src/app/globals.css                                |  23 ++
+ src/app/layout.tsx                                 |  28 +-
+ .../agents/components/AgentEditorModal.tsx         |  38 +--
+ src/features/office/components/HQSidebar.tsx       |  38 +--
+ .../office/components/panels/SettingsPanel.tsx     |  99 ++++---
+ .../components/panels/SkillsMarketplaceModal.tsx   |   8 +-
+ src/features/office/screens/OfficeScreen.tsx       |  34 +--
+ .../onboarding/components/OnboardingWizard.tsx     |  14 +-
+ src/features/onboarding/components/WelcomeStep.tsx | 110 ++++----
+ src/features/retro-office/RetroOffice3D.tsx        |  16 +-
+ src/lib/i18n/I18nContext.tsx                       |  69 +++++
+ src/lib/i18n/dictionaries/en.ts                    | 287 +++++++++++++++++++++
+ src/lib/i18n/dictionaries/zh.ts                    | 145 +++++++++++
+ src/lib/i18n/useTranslation.ts                     |  53 ++++
+ tsc_output.txt                                     |   4 +
+ 15 files changed, 803 insertions(+), 163 deletions(-)
