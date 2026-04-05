@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 export type HQSidebarTab =
   | "inbox"
@@ -23,13 +24,6 @@ type HQSidebarProps = {
   analyticsPanel: ReactNode;
 };
 
-const TAB_LABELS: Record<HQSidebarTab, string> = {
-  inbox: "Inbox",
-  history: "History",
-  playbooks: "Playbooks",
-  analytics: "Analytics",
-};
-
 const PRIMARY_TABS: HQSidebarTab[] = ["inbox", "history", "playbooks"];
 
 export function HQSidebar({
@@ -48,6 +42,8 @@ export function HQSidebar({
 }: HQSidebarProps) {
   const analyticsOnly = activeTab === "analytics";
   const railOnly = analyticsOnly;
+  const { t, locale, setLocale } = useTranslation();
+
   const activePanel =
     activeTab === "inbox"
       ? inboxPanel
@@ -68,7 +64,7 @@ export function HQSidebar({
           aria-label={open ? "Collapse headquarters sidebar" : "Open headquarters sidebar"}
         >
           <span className="block leading-none [writing-mode:vertical-rl]">
-            {open ? "COLLAPSE HQ" : "OPEN HQ"}
+            {open ? t("hqSidebar.collapseHq") : t("hqSidebar.openHq")}
           </span>
         </button>
 
@@ -81,7 +77,7 @@ export function HQSidebar({
           aria-label="Open marketplace"
         >
           <span className="block leading-none [writing-mode:vertical-rl]">
-            MARKETPLACE
+            {t("hqSidebar.marketplace")}
           </span>
         </button>
 
@@ -102,8 +98,16 @@ export function HQSidebar({
           aria-label="Open analytics sidebar"
         >
           <span className="block leading-none [writing-mode:vertical-rl]">
-            ANALYTICS
+            {t("hqSidebar.analytics")}
           </span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setLocale(locale === "en" ? "zh" : "en")}
+          className="rounded-l-md border border-r-0 border-white/20 bg-black/80 px-1.5 py-2.5 font-mono text-[10px] font-semibold tracking-[0.2em] text-white/70 shadow-xl backdrop-blur transition-colors hover:border-white/40 hover:text-white"
+          aria-label="Toggle Language"
+        >
+          <span className="block leading-none">{locale === "en" ? "中" : "EN"}</span>
         </button>
       </div>
 
@@ -111,12 +115,12 @@ export function HQSidebar({
         <div className="pointer-events-auto flex h-full w-56 flex-col border-l border-cyan-500/20 bg-black/85 shadow-2xl backdrop-blur">
           <div className="border-b border-cyan-500/15 px-4 py-3">
             <div className="font-mono text-[10px] font-semibold tracking-[0.32em] text-cyan-300/80">
-              {analyticsOnly ? "ANALYTICS" : "HEADQUARTERS"}
+              {analyticsOnly ? t("hqSidebar.analytics") : t("hqSidebar.headquarters")}
             </div>
             <div className="mt-1 font-mono text-[11px] text-white/45">
               {analyticsOnly
-                ? "Cost, budgets, and performance intelligence."
-                : "Monitor outputs, runs, and schedules."}
+                ? t("hqSidebar.analyticsDesc")
+                : t("hqSidebar.hqDesc")}
             </div>
             {!railOnly && onAddAgent ? (
               <button
@@ -124,7 +128,7 @@ export function HQSidebar({
                 onClick={onAddAgent}
                 className="mt-3 rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
               >
-                Add Agent
+                {t("hqSidebar.addAgent")}
               </button>
             ) : null}
             {!railOnly && onOpenCompanyBuilder ? (
@@ -133,7 +137,7 @@ export function HQSidebar({
                 onClick={onOpenCompanyBuilder}
                 className="mt-2 rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-emerald-200 transition-colors hover:border-emerald-400/40 hover:text-emerald-100"
               >
-                Build Company
+                {t("hqSidebar.buildCompany")}
               </button>
             ) : null}
             {railOnly ? (
@@ -142,7 +146,7 @@ export function HQSidebar({
                 onClick={() => onTabChange("inbox")}
                 className="mt-3 rounded border border-cyan-500/20 bg-cyan-500/10 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-cyan-200 transition-colors hover:border-cyan-400/40 hover:text-cyan-100"
               >
-                Back To HQ
+                {t("hqSidebar.backToHq")}
               </button>
             ) : null}
           </div>
@@ -171,7 +175,7 @@ export function HQSidebar({
                         : "text-white/45 hover:bg-white/5 hover:text-white/80"
                     }`}
                   >
-                    <span>{TAB_LABELS[tab]}</span>
+                    <span>{t(`hqSidebar.tabs.${tab}` as any)}</span>
                     {showBadge ? (
                       <span className="rounded bg-cyan-500/15 px-1.5 py-0.5 text-[10px] text-cyan-300" aria-label={`${inboxCount} unread`}>
                         {inboxCount}

@@ -26,6 +26,7 @@ import {
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 import { SettingsPanel } from "@/features/office/components/panels/SettingsPanel";
 import { AtmImmersiveScreen } from "@/features/office/screens/AtmImmersiveScreen";
 import { GithubImmersiveScreen } from "@/features/office/screens/GithubImmersiveScreen";
@@ -40,6 +41,7 @@ import {
 import { StandupImmersiveScreen } from "@/features/office/screens/StandupImmersiveScreen";
 import type { OfficeUsageAnalyticsParams } from "@/features/office/hooks/useOfficeUsageAnalyticsViewModel";
 import { buildMockPhoneCallScenario } from "@/lib/office/call/mock";
+import type { AgentEditorSection } from "@/features/agents/components/AgentEditorModal";
 import type { MockPhoneCallScenario } from "@/lib/office/call/types";
 import { buildMockTextMessageScenario } from "@/lib/office/text/mock";
 import type { MockTextMessageScenario } from "@/lib/office/text/types";
@@ -2295,7 +2297,7 @@ const getAgentInitials = (name: string | null | undefined): string => {
 };
 
 export function RetroOffice3D({
-  agents,
+  agents = [],
   officeCenterSignal = 0,
   animationState = null,
   readOnly = false,
@@ -2338,12 +2340,12 @@ export function RetroOffice3D({
   onRemoteOfficePresenceUrlChange,
   onRemoteOfficeGatewayUrlChange,
   onRemoteOfficeTokenChange,
+  onGatewayDisconnect,
+  onOpenOnboarding,
   onVoiceRepliesToggle,
   onVoiceRepliesVoiceChange,
   onVoiceRepliesSpeedChange,
   onVoiceRepliesPreview,
-  onGatewayDisconnect,
-  onOpenOnboarding,
   atmAnalytics = null,
   feedEvents = EMPTY_FEED_EVENTS,
   gatewayStatus = "disconnected",
@@ -2438,7 +2440,7 @@ export function RetroOffice3D({
   onMonitorSelect?: (agentId: string | null) => void;
   onAgentChatSelect?: (agentId: string) => void;
   onAddAgent?: () => void;
-  onAgentEdit?: (agentId: string) => void;
+  onAgentEdit?: (agentId: string, initialSection?: AgentEditorSection) => void;
   onAgentDelete?: (agentId: string) => void;
   onDeskAssignmentChange?: (deskUid: string, agentId: string | null) => void;
   onDeskAssignmentsReset?: (deskUids: string[]) => void;
@@ -2454,6 +2456,8 @@ export function RetroOffice3D({
   onOpenGithubSkillSetup?: () => void;
   onJukeboxInteract?: () => void;
 }) {
+  const { t } = useTranslation();
+  const [windowReady, setWindowReady] = useState(false);
   const resolvedCleaningCues = animationState?.cleaningCues ?? cleaningCues;
   const resolvedDanceUntilByAgentId =
     animationState?.danceUntilByAgentId ?? EMPTY_NUMBER_RECORD;
@@ -6755,10 +6759,10 @@ export function RetroOffice3D({
             <div className="flex items-start justify-between border-b border-cyan-500/10 px-4 py-3">
               <div>
                 <div className="font-mono text-[10px] font-semibold tracking-[0.28em] text-cyan-300/75">
-                  STUDIO SETTINGS
+                  {t("settingsPanel.header" as any)}
                 </div>
                 <div className="mt-1 text-[11px] text-white/45">
-                  Customize the office banner and spoken replies across the app.
+                  {t("settingsPanel.headerDesc" as any)}
                 </div>
               </div>
               <button

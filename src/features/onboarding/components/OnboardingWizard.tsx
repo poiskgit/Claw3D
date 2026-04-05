@@ -7,6 +7,7 @@
  */
 import { useCallback, useMemo, useState } from "react";
 import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 import {
   getNextStep,
@@ -70,6 +71,7 @@ export const OnboardingWizard = ({
   const [completedSteps, setCompletedSteps] = useState<Set<OnboardingStepId>>(
     () => new Set(initialCompletedSteps ?? []),
   );
+  const { t } = useTranslation();
 
   const stepIndex = useMemo(() => getStepIndex(currentStep), [currentStep]);
   const currentStepDef = ONBOARDING_STEPS[stepIndex];
@@ -155,10 +157,10 @@ export const OnboardingWizard = ({
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div>
             <h2 className="text-lg font-semibold text-white">
-              {currentStepDef?.title ?? "Onboarding"}
+              {currentStepDef ? t(`onboarding.steps.${currentStepDef.id}.title` as any) : t("onboarding.title")}
             </h2>
             <p className="mt-0.5 text-xs text-white/60">
-              {currentStepDef?.description}
+              {currentStepDef ? t(`onboarding.steps.${currentStepDef.id}.desc` as any) : ""}
             </p>
           </div>
           <button
@@ -201,7 +203,7 @@ export const OnboardingWizard = ({
                 onClick={goPrev}
               >
                 <ArrowLeft className="h-3.5 w-3.5" />
-                Back
+                {t("onboarding.back")}
               </button>
             ) : null}
           </div>
@@ -215,7 +217,7 @@ export const OnboardingWizard = ({
                 className="inline-flex items-center gap-1.5 rounded-md bg-amber-500 px-4 py-2 text-xs font-semibold text-[#1a1206] transition-colors hover:bg-amber-400"
                 onClick={onComplete}
               >
-                Enter Office
+                {t("onboarding.enterOffice")}
               </button>
             ) : (
               <button
@@ -225,8 +227,8 @@ export const OnboardingWizard = ({
                 disabled={!canGoNext}
               >
                 {currentStep === "connect" && !gatewayConnected
-                  ? "Connect first"
-                  : "Next"}
+                  ? t("onboarding.connectFirst")
+                  : t("onboarding.next")}
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             )}

@@ -15,6 +15,7 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 import type { AgentState } from "@/features/agents/state/store";
 import { AgentAvatarEditorPanel } from "@/features/agents/components/AgentAvatarEditorPanel";
 import { AgentBrainPanel } from "@/features/agents/components/inspect/AgentBrainPanel";
@@ -110,6 +111,7 @@ export const AgentEditorModal = ({
   onDelete,
   onNavigateAgent,
 }: AgentEditorModalProps) => {
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<AgentEditorSection>(initialSection);
   const activeAgentIndex = agents.findIndex((entry) => entry.agentId === agent.agentId);
   const previousAgent =
@@ -144,15 +146,15 @@ export const AgentEditorModal = ({
         <div className="ui-panel flex h-[min(90vh,920px)] w-full overflow-hidden shadow-xs">
           <aside className="flex w-[240px] shrink-0 flex-col border-r border-border/50 bg-muted/20">
             <div className="border-b border-border/40 px-5 py-4">
-              <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                Agent editor
-              </div>
-              <div className="mt-1 truncate text-lg font-semibold text-foreground">
-                {agent.name}
-              </div>
-              <div className="mt-1 text-xs text-muted-foreground">
-                Edit avatar and agent brain settings from the office.
-              </div>
+            <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+              {t("agentEditor.title")}
+            </div>
+            <div className="mt-1 truncate text-lg font-semibold text-foreground">
+              {agent.name}
+            </div>
+            <div className="mt-1 text-xs text-muted-foreground">
+              {t("agentEditor.description")}
+            </div>
               {onNavigateAgent ? (
                 <div className="mt-4 flex items-center gap-2">
                   <button
@@ -165,7 +167,7 @@ export const AgentEditorModal = ({
                     className="inline-flex items-center gap-1 rounded-md border border-border/50 bg-background/40 px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-border hover:bg-background/70 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <ChevronLeft className="h-3.5 w-3.5" />
-                    <span>Previous</span>
+                    <span>{t("agentEditor.previous")}</span>
                   </button>
                   <button
                     type="button"
@@ -176,7 +178,7 @@ export const AgentEditorModal = ({
                     disabled={!nextAgent}
                     className="inline-flex items-center gap-1 rounded-md border border-border/50 bg-background/40 px-2.5 py-1.5 text-xs text-foreground transition-colors hover:border-border hover:bg-background/70 disabled:cursor-not-allowed disabled:opacity-40"
                   >
-                    <span>Next</span>
+                    <span>{t("agentEditor.next")}</span>
                     <ChevronRight className="h-3.5 w-3.5" />
                   </button>
                 </div>
@@ -199,8 +201,8 @@ export const AgentEditorModal = ({
                   >
                     <Icon className="h-4 w-4" />
                     <div>
-                      <div className="text-sm font-medium">{section.label}</div>
-                      <div className="text-xs opacity-75">{section.hint}</div>
+                      <div className="text-sm font-medium">{t(`agentEditor.sections.${section.id === "avatar" ? "avatar" : section.id.replace(".md", "").toLowerCase() as any}.label` as any)}</div>
+                      <div className="text-xs opacity-75">{t(`agentEditor.sections.${section.id === "avatar" ? "avatar" : section.id.replace(".md", "").toLowerCase() as any}.hint` as any)}</div>
                     </div>
                   </button>
                 );
@@ -217,9 +219,9 @@ export const AgentEditorModal = ({
                 >
                   <Trash2 className="h-4 w-4" />
                   <div>
-                    <div className="text-sm font-semibold text-inherit">Delete Agent</div>
+                    <div className="text-sm font-semibold text-inherit">{t("agentEditor.deleteAgent")}</div>
                     <div className="text-xs text-red-100/85">
-                      Remove this agent from Claw3D and OpenClaw.
+                      {t("agentEditor.deleteAgentDesc")}
                     </div>
                   </div>
                 </button>
@@ -240,10 +242,10 @@ export const AgentEditorModal = ({
               <div className="flex min-h-0 flex-1 flex-col">
                 <div className="border-b border-border/40 px-6 py-4">
                   <div className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                    Agent file editor
+                    {t("agentEditor.fileEditor")}
                   </div>
                   <div className="mt-1 text-sm text-muted-foreground">
-                    Edit one agent file at a time and save it through the gateway.
+                    {t("agentEditor.fileEditorDesc")}
                   </div>
                 </div>
                 <div className="min-h-0 flex-1">
@@ -270,7 +272,7 @@ export const AgentEditorModal = ({
               </div>
             ) : (
               <div className="flex h-full items-center justify-center p-8 text-sm text-muted-foreground">
-                Connect to a gateway to edit brain files.
+                {t("agentEditor.connectToEdit")}
               </div>
             )}
           </section>

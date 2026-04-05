@@ -1083,6 +1083,29 @@ textarea:focus::-webkit-scrollbar {
   stroke-width: 1.75;
 }
 
+[lang="zh"] {
+  --tracking-normal: 0.02em; /* slightly more tracking for Chinese */
+}
+
+/* Chinese Typography Scale Up */
+[lang="zh"] .text-\[10px\] {
+  font-size: 11px;
+}
+[lang="zh"] .text-\[11px\] {
+  font-size: 12px;
+}
+[lang="zh"] .text-xs {
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.125rem;
+}
+[lang="zh"] .text-sm {
+  font-size: 0.9375rem; /* 15px */
+  line-height: 1.375rem;
+}
+[lang="zh"] .text-base {
+  font-size: 1.0625rem; /* 17px */
+}
+
 .agent-inspect-panel .text-\[10px\] {
   font-size: 11px;
 }

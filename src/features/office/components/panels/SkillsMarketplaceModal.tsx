@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 
 import { X } from "lucide-react";
+import { useTranslation } from "@/lib/i18n/useTranslation";
 
 import type { OfficeSkillsMarketplaceController } from "@/features/office/hooks/useOfficeSkillsMarketplace";
 
@@ -23,6 +24,7 @@ export function SkillsMarketplaceModal({
   onSelectAgent,
   onOpenAgentSettings,
 }: SkillsMarketplaceModalProps) {
+  const { t } = useTranslation();
   useEffect(() => {
     if (!open) {
       return;
@@ -59,10 +61,10 @@ export function SkillsMarketplaceModal({
         <div className="flex items-start justify-between gap-4 border-b border-cyan-500/10 px-5 py-4">
           <div>
             <div className="font-mono text-[10px] uppercase tracking-[0.22em] text-cyan-300/80">
-              Skills Marketplace
+              {t("skillsMarketplace.title")}
             </div>
             <div className="mt-1 font-mono text-[11px] text-white/45">
-              Discover, install, and enable gateway skills in a wider workspace.
+              {t("skillsMarketplace.description")}
             </div>
           </div>
           <button
@@ -71,7 +73,7 @@ export function SkillsMarketplaceModal({
             className="inline-flex items-center gap-1 rounded border border-white/10 bg-white/5 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/75 transition-colors hover:bg-white/10"
           >
             <X className="h-3.5 w-3.5" />
-            Close
+            {t("common.close")}
           </button>
         </div>
 

@@ -1,0 +1,4 @@
+src/features/office/screens/OfficeScreen.tsx(830,9): error TS2451: Cannot redeclare block-scoped variable 'router'.
+src/features/office/screens/OfficeScreen.tsx(984,9): error TS2451: Cannot redeclare block-scoped variable 'router'.
+src/features/retro-office/RetroOffice3D.tsx(6759,20): error TS2304: Cannot find name 't'.
+src/features/retro-office/RetroOffice3D.tsx(6762,20): error TS2304: Cannot find name 't'.
