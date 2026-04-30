@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useTranslation } from "@/lib/i18n/useTranslation";
 import {
   AlertTriangle,
   Bell,
@@ -26,6 +25,7 @@ import type { AgentState } from "@/features/agents/state/store";
 import type { CronCreateDraft, CronCreateTemplateId } from "@/lib/cron/createPayloadBuilder";
 import { formatCronPayload, formatCronSchedule, type CronJobSummary } from "@/lib/cron/types";
 import type { SkillStatusReport } from "@/lib/skills/types";
+import type { StudioGatewayAdapterType } from "@/lib/studio/settings";
 
 export type AgentSettingsPanelProps = {
   agent: AgentState;
@@ -48,6 +48,7 @@ export type AgentSettingsPanelProps = {
   cronCreateBusy?: boolean;
   onCreateCronJob?: (draft: CronCreateDraft) => Promise<void> | void;
   controlUiUrl?: string | null;
+  adapterType?: StudioGatewayAdapterType | null;
   skillsReport?: SkillStatusReport | null;
   skillsLoading?: boolean;
   skillsError?: string | null;
@@ -249,6 +250,7 @@ export const AgentSettingsPanel = ({
   cronCreateBusy = false,
   onCreateCronJob = () => {},
   controlUiUrl = null,
+  adapterType = "openclaw",
   skillsReport = null,
   skillsLoading = false,
   skillsError = null,
@@ -268,7 +270,7 @@ export const AgentSettingsPanel = ({
   onSkillApiKeyChange = () => {},
   onSaveSkillApiKey = () => {},
 }: AgentSettingsPanelProps) => {
-  const { t } = useTranslation();
+  const isOpenClawRuntime = adapterType === "openclaw";
   const initialPermissionsDraft =
     permissionsDraft ?? resolvePresetDefaultsForRole(resolveExecutionRoleFromAgent(agent));
   const [permissionsBaselineValue, setPermissionsBaselineValue] =
@@ -478,17 +480,17 @@ export const AgentSettingsPanel = ({
             <div className="mt-2 flex flex-col gap-8">
               <div className="px-1 py-1">
                 <div className="sidebar-copy flex flex-col gap-1 text-[11px] text-muted-foreground">
-                  <span className="font-medium text-foreground/88">{t("agentSettings.capabilities.runCommands")}</span>
+                  <span className="font-medium text-foreground/88">Run commands</span>
                   <div
                     className="ui-segment ui-segment-command-mode mt-2 grid-cols-3"
                     role="group"
-                    aria-label={t("agentSettings.capabilities.runCommands")}
+                    aria-label="Run commands"
                   >
                     {(
                       [
-                        { id: "off", label: t("agentSettings.capabilities.runCommandsOff") },
-                        { id: "ask", label: t("agentSettings.capabilities.runCommandsAsk") },
-                        { id: "auto", label: t("agentSettings.capabilities.runCommandsAuto") },
+                        { id: "off", label: "Off" },
+                        { id: "ask", label: "Ask" },
+                        { id: "auto", label: "Auto" },
                       ] as const
                     ).map((option) => {
                       const selected = permissionsDraftValue.commandMode === option.id;
@@ -519,7 +521,7 @@ export const AgentSettingsPanel = ({
                   <button
                     type="button"
                     role="switch"
-                    aria-label={t("agentSettings.capabilities.webAccess")}
+                    aria-label="Web access"
                     aria-checked={permissionsDraftValue.webAccess}
                     className={`ui-switch self-center ${permissionsDraftValue.webAccess ? "ui-switch--on" : ""}`}
                     onClick={() =>
@@ -532,9 +534,9 @@ export const AgentSettingsPanel = ({
                     <span className="ui-switch-thumb" />
                   </button>
                   <div className="sidebar-copy flex flex-col">
-                    <span className="text-[11px] font-medium text-foreground/88">{t("agentSettings.capabilities.webAccess")}</span>
+                    <span className="text-[11px] font-medium text-foreground/88">Web access</span>
                     <span className="text-[10px] text-muted-foreground/70">
-                      {t("agentSettings.capabilities.webAccessDesc")}
+                      Allows this agent to fetch live web results.
                     </span>
                   </div>
                 </div>
@@ -545,7 +547,7 @@ export const AgentSettingsPanel = ({
                   <button
                     type="button"
                     role="switch"
-                    aria-label={t("agentSettings.capabilities.fileTools")}
+                    aria-label="File tools"
                     aria-checked={permissionsDraftValue.fileTools}
                     className={`ui-switch self-center ${permissionsDraftValue.fileTools ? "ui-switch--on" : ""}`}
                     onClick={() =>
@@ -558,9 +560,9 @@ export const AgentSettingsPanel = ({
                     <span className="ui-switch-thumb" />
                   </button>
                   <div className="sidebar-copy flex flex-col">
-                    <span className="text-[11px] font-medium text-foreground/88">{t("agentSettings.capabilities.fileTools")}</span>
+                    <span className="text-[11px] font-medium text-foreground/88">File tools</span>
                     <span className="text-[10px] text-muted-foreground/70">
-                      {t("agentSettings.capabilities.fileToolsDesc")}
+                      Lets this agent read and edit files in its workspace.
                     </span>
                   </div>
                 </div>
@@ -571,7 +573,7 @@ export const AgentSettingsPanel = ({
                   <button
                     type="button"
                     role="switch"
-                    aria-label={t("agentSettings.capabilities.browserAutomation")}
+                    aria-label="Browser automation"
                     aria-checked="false"
                     className="ui-switch self-center"
                     disabled
@@ -579,19 +581,19 @@ export const AgentSettingsPanel = ({
                     <span className="ui-switch-thumb" />
                   </button>
                   <div className="sidebar-copy flex flex-col">
-                    <span className="text-[11px] font-medium text-foreground/88">{t("agentSettings.capabilities.browserAutomation")}</span>
-                    <span className="text-[10px] text-muted-foreground/70">{t("agentSettings.capabilities.comingSoon")}</span>
+                    <span className="text-[11px] font-medium text-foreground/88">Browser automation</span>
+                    <span className="text-[10px] text-muted-foreground/70">Coming soon</span>
                   </div>
                 </div>
                 <ChevronRight className="h-4 w-4 text-muted-foreground/55" aria-hidden="true" />
               </div>
             </div>
             <div className="sidebar-copy mt-3 text-[11px] text-muted-foreground">
-              {permissionsSaveState === "saving" ? t("agentSettings.capabilities.saving") : null}
-              {permissionsSaveState === "saved" ? t("agentSettings.capabilities.saved") : null}
+              {permissionsSaveState === "saving" ? "Saving..." : null}
+              {permissionsSaveState === "saved" ? "Saved." : null}
               {permissionsSaveState === "error" && permissionsSaveError ? (
                 <span>
-                  {t("agentSettings.capabilities.couldNotSave")} {permissionsSaveError}{" "}
+                  Couldn&apos;t save. {permissionsSaveError}{" "}
                   <button
                     type="button"
                     className="underline underline-offset-2"
@@ -599,14 +601,14 @@ export const AgentSettingsPanel = ({
                       void runPermissionsSave(permissionsDraftValue);
                     }}
                   >
-                    {t("agentSettings.capabilities.retry")}
+                    Retry
                   </button>
                 </span>
               ) : null}
             </div>
             {permissionsSaveState === "error" && !permissionsSaveError ? (
               <div className="ui-alert-danger mt-3 rounded-md px-3 py-2 text-xs">
-                {t("agentSettings.capabilities.couldNotSave")}
+                Couldn&apos;t save permissions.
               </div>
             ) : null}
           </section>
@@ -648,19 +650,19 @@ export const AgentSettingsPanel = ({
         {mode === "automations" ? (
           <section className="sidebar-section" data-testid="agent-settings-cron">
             <div className="flex items-center justify-between gap-2">
-              <h3 className="sidebar-section-title">{t("agentSettings.cron.title")}</h3>
+              <h3 className="sidebar-section-title">Timed automations</h3>
               {!cronLoading && !cronError && cronJobs.length > 0 ? (
                 <button
                   className="sidebar-btn-ghost px-2.5 py-1.5 font-mono text-[10px] font-semibold tracking-[0.06em] disabled:cursor-not-allowed disabled:opacity-60"
                   type="button"
                   onClick={openCronCreate}
                 >
-                  {t("agentSettings.cron.create")}
+                  Create
                 </button>
               ) : null}
             </div>
             {cronLoading ? (
-              <div className="mt-3 text-[11px] text-muted-foreground">{t("agentSettings.cron.loading")}</div>
+              <div className="mt-3 text-[11px] text-muted-foreground">Loading timed automations...</div>
             ) : null}
             {!cronLoading && cronError ? (
               <div className="ui-alert-danger mt-3 rounded-md px-3 py-2 text-xs">
@@ -675,14 +677,14 @@ export const AgentSettingsPanel = ({
                   data-testid="cron-empty-icon"
                 />
                 <div className="sidebar-copy text-[11px] text-muted-foreground/82">
-                  {t("agentSettings.cron.noAutomations")}
+                  No timed automations for this agent.
                 </div>
                 <button
                   className="sidebar-btn-primary mt-2 w-auto min-w-[116px] self-center px-4 py-2 font-mono text-[10px] font-semibold tracking-[0.06em] disabled:cursor-not-allowed disabled:opacity-60"
                   type="button"
                   onClick={openCronCreate}
                 >
-                  {t("agentSettings.cron.create")}
+                  Create
                 </button>
               </div>
             ) : null}
@@ -711,13 +713,13 @@ export const AgentSettingsPanel = ({
                           </div>
                           {!job.enabled ? (
                             <div className="shrink-0 rounded-md bg-muted/50 px-2 py-0.5 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground shadow-2xs">
-                              {t("agentSettings.cron.disabled")}
+                              Disabled
                             </div>
                           ) : null}
                         </div>
                         <div className="mt-1 text-[11px] text-muted-foreground">
                           <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                            {t("agentSettings.cron.frequency")}
+                            Frequency
                           </span>
                           <div className="break-words">{scheduleText}</div>
                         </div>
@@ -730,7 +732,7 @@ export const AgentSettingsPanel = ({
                           <div className="mt-1 text-[11px] text-muted-foreground">
                             <div className="flex items-center justify-between gap-2">
                               <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                                {t("agentSettings.cron.task")}
+                                Task
                               </span>
                               {payloadExpandable ? (
                                 <button
@@ -748,7 +750,7 @@ export const AgentSettingsPanel = ({
                                     });
                                   }}
                                 >
-                                  {expanded ? t("agentSettings.cron.less") : t("agentSettings.cron.more")}
+                                  {expanded ? "Less" : "More"}
                                 </button>
                               ) : null}
                             </div>
@@ -787,73 +789,77 @@ export const AgentSettingsPanel = ({
                 })}
               </div>
             ) : null}
-            <section className="sidebar-section" data-testid="agent-settings-heartbeat-coming-soon">
-              <h3 className="sidebar-section-title">{t("agentSettings.cron.heartbeatsTitle")}</h3>
-              <div className="mt-3 text-[11px] text-muted-foreground">
-                {t("agentSettings.cron.heartbeatsComingSoon")}
-              </div>
-            </section>
+            {isOpenClawRuntime ? (
+              <section className="sidebar-section" data-testid="agent-settings-heartbeat-coming-soon">
+                <h3 className="sidebar-section-title">Heartbeats</h3>
+                <div className="mt-3 text-[11px] text-muted-foreground">
+                  Heartbeat automation controls are coming soon.
+                </div>
+              </section>
+            ) : null}
           </section>
         ) : null}
 
         {mode === "advanced" ? (
           <>
-            <section className="sidebar-section mt-8" data-testid="agent-settings-control-ui">
-              <h3 className="sidebar-section-title ui-text-danger">{t("agentSettings.advanced.dangerZone")}</h3>
-              <div className="ui-alert-danger mt-3 rounded-md px-3 py-3 text-[11px]">
-                <div className="flex items-start gap-2">
-                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                  <div className="space-y-1">
-                    <div className="font-medium whitespace-pre-wrap">
-                      {t("agentSettings.advanced.warningContext")}
+            {isOpenClawRuntime ? (
+              <section className="sidebar-section mt-8" data-testid="agent-settings-control-ui">
+                <h3 className="sidebar-section-title ui-text-danger">Danger Zone</h3>
+                <div className="ui-alert-danger mt-3 rounded-md px-3 py-3 text-[11px]">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <div className="space-y-1">
+                      <div className="font-medium">Advanced users only.</div>
+                      <div>Open the full OpenClaw Control UI outside Studio.</div>
+                      <div>Changes there can break agent behavior or put Studio out of sync.</div>
                     </div>
                   </div>
                 </div>
-              </div>
-              {canOpenControlUi ? (
-                <a
-                  className="sidebar-btn-primary ui-btn-danger mt-3 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-center font-mono text-[10px] font-semibold tracking-[0.06em]"
-                  href={controlUiUrl ?? undefined}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {t("agentSettings.advanced.openFullControlUi")}
-                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
-                </a>
-              ) : (
-                <>
-                  <button
-                    className="sidebar-btn-primary ui-btn-danger mt-3 inline-flex px-3 py-2.5 font-mono text-[10px] font-semibold tracking-[0.06em] disabled:cursor-not-allowed disabled:opacity-65"
-                    type="button"
-                    disabled
+                {canOpenControlUi ? (
+                  <a
+                    className="sidebar-btn-primary ui-btn-danger mt-3 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-center font-mono text-[10px] font-semibold tracking-[0.06em]"
+                    href={controlUiUrl ?? undefined}
+                    target="_blank"
+                    rel="noreferrer"
                   >
-                    {t("agentSettings.advanced.openFullControlUi")}
-                  </button>
-                  <div className="mt-2 text-[10px] text-muted-foreground/70">
-                    {t("agentSettings.advanced.linkUnavailable")}
-                  </div>
-                </>
-              )}
-            </section>
+                    Open Full Control UI
+                    <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                  </a>
+                ) : (
+                  <>
+                    <button
+                      className="sidebar-btn-primary ui-btn-danger mt-3 inline-flex px-3 py-2.5 font-mono text-[10px] font-semibold tracking-[0.06em] disabled:cursor-not-allowed disabled:opacity-65"
+                      type="button"
+                      disabled
+                    >
+                      Open Full Control UI
+                    </button>
+                    <div className="mt-2 text-[10px] text-muted-foreground/70">
+                      Control UI link unavailable for this gateway.
+                    </div>
+                  </>
+                )}
+              </section>
+            ) : null}
 
             {canDelete ? (
               <section className="sidebar-section mt-8">
                 <div className="text-[11px] text-muted-foreground/68">
-                  {t("agentSettings.advanced.deleteAgentDesc")}
+                  Removes the agent from the gateway config and deletes its scheduled automations.
                 </div>
                 <button
                   className="sidebar-btn-ghost ui-btn-danger mt-3 inline-flex px-3 py-2 font-mono text-[10px] font-semibold tracking-[0.06em]"
                   type="button"
                   onClick={onDelete}
                 >
-                  {t("agentSettings.advanced.deleteAgentBtn")}
+                  Delete agent
                 </button>
               </section>
             ) : (
               <section className="sidebar-section mt-8">
-                <h3 className="sidebar-section-title">{t("agentSettings.advanced.systemAgentTitle")}</h3>
+                <h3 className="sidebar-section-title">System agent</h3>
                 <div className="mt-3 text-[11px] text-muted-foreground">
-                  {t("agentSettings.advanced.systemAgentDesc")}
+                  The main agent is reserved and cannot be deleted.
                 </div>
               </section>
             )}
@@ -876,7 +882,7 @@ export const AgentSettingsPanel = ({
             <div className="flex items-start justify-between gap-3 px-6 py-5">
               <div className="min-w-0">
                 <div className="text-[11px] font-medium tracking-[0.01em] text-muted-foreground/80">
-                  {t("agentSettings.cronComposer.title")}
+                  Timed automation composer
                 </div>
                 <div className="mt-1 text-base font-semibold text-foreground">
                   {timedAutomationStepMeta.title}
@@ -887,7 +893,7 @@ export const AgentSettingsPanel = ({
                 className="sidebar-btn-ghost px-3 font-mono text-[10px] font-semibold tracking-[0.06em]"
                 onClick={closeCronCreate}
               >
-                {t("agentSettings.cronComposer.close")}
+                Close
               </button>
             </div>
             <div className="space-y-4 px-5 py-5">
@@ -899,7 +905,7 @@ export const AgentSettingsPanel = ({
               {cronCreateStep === 0 ? (
                 <div className="space-y-3">
                   <div className="text-sm text-muted-foreground">
-                    {t("agentSettings.cronComposer.step1Desc")}
+                    Pick a template to start quickly, or choose Custom.
                   </div>
                   <div className="grid gap-2 sm:grid-cols-2">
                     {CRON_TEMPLATE_OPTIONS.map((option) => {
@@ -933,14 +939,14 @@ export const AgentSettingsPanel = ({
               {cronCreateStep === 1 ? (
                 <div className="space-y-3">
                   <div className="text-sm text-muted-foreground">
-                    {t("agentSettings.cronComposer.step2Desc")}
+                    Name this automation and describe what it should do.
                   </div>
                   <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                      {t("agentSettings.cronComposer.automationName")}
+                      Automation name
                     </span>
                     <input
-                      aria-label={t("agentSettings.cronComposer.automationName")}
+                      aria-label="Automation name"
                       className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
                       value={cronDraft.name}
                       onChange={(event) => updateCronDraft({ name: event.target.value })}
@@ -948,10 +954,10 @@ export const AgentSettingsPanel = ({
                   </label>
                   <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                      {t("agentSettings.cronComposer.task")}
+                      Task
                     </span>
                     <textarea
-                      aria-label={t("agentSettings.cronComposer.task")}
+                      aria-label="Task"
                       className="min-h-28 rounded-md border border-border bg-surface-3 px-3 py-2 text-sm text-foreground outline-none"
                       value={cronDraft.taskText}
                       onChange={(event) => updateCronDraft({ taskText: event.target.value })}
@@ -961,10 +967,10 @@ export const AgentSettingsPanel = ({
               ) : null}
               {cronCreateStep === 2 ? (
                 <div className="space-y-3">
-                  <div className="text-sm text-muted-foreground">{t("agentSettings.cronComposer.step3Desc")}</div>
+                  <div className="text-sm text-muted-foreground">Choose when this should run.</div>
                   <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                     <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                      {t("agentSettings.cronComposer.scheduleType")}
+                      Schedule type
                     </span>
                     <select
                       className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
@@ -975,15 +981,15 @@ export const AgentSettingsPanel = ({
                         })
                       }
                     >
-                      <option value="every">{t("agentSettings.cronComposer.every")}</option>
-                      <option value="at">{t("agentSettings.cronComposer.oneTime")}</option>
+                      <option value="every">Every</option>
+                      <option value="at">One time</option>
                     </select>
                   </label>
                   {cronDraft.scheduleKind === "every" ? (
                     <div className="grid gap-2 sm:grid-cols-2">
                       <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                          {t("agentSettings.cronComposer.every")}
+                          Every
                         </span>
                         <input
                           type="number"
@@ -1000,7 +1006,7 @@ export const AgentSettingsPanel = ({
                       </label>
                       <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                         <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                          {t("agentSettings.cronComposer.unit")}
+                          Unit
                         </span>
                         <select
                           className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
@@ -1011,16 +1017,16 @@ export const AgentSettingsPanel = ({
                             })
                           }
                         >
-                          <option value="minutes">{t("agentSettings.cronComposer.minutes")}</option>
-                          <option value="hours">{t("agentSettings.cronComposer.hours")}</option>
-                          <option value="days">{t("agentSettings.cronComposer.days")}</option>
+                          <option value="minutes">Minutes</option>
+                          <option value="hours">Hours</option>
+                          <option value="days">Days</option>
                         </select>
                       </label>
                       {cronDraft.everyUnit === "days" ? (
                         <>
                           <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                             <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                              {t("agentSettings.cronComposer.timeOfDay")}
+                              Time of day
                             </span>
                             <input
                               type="time"
@@ -1031,7 +1037,7 @@ export const AgentSettingsPanel = ({
                           </label>
                           <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                             <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                              {t("agentSettings.cronComposer.timezone")}
+                              Timezone
                             </span>
                             <input
                               className="h-10 rounded-md border border-border bg-surface-3 px-3 text-sm text-foreground outline-none"
@@ -1048,7 +1054,7 @@ export const AgentSettingsPanel = ({
                   {cronDraft.scheduleKind === "at" ? (
                     <label className="flex flex-col gap-1 text-[11px] text-muted-foreground">
                       <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em]">
-                        {t("agentSettings.cronComposer.runAt")}
+                        Run at
                       </span>
                       <input
                         type="datetime-local"
@@ -1062,16 +1068,16 @@ export const AgentSettingsPanel = ({
               ) : null}
               {cronCreateStep === 3 ? (
                 <div className="space-y-3 text-sm text-muted-foreground">
-                  <div>{t("agentSettings.cronComposer.step4Desc")}</div>
+                  <div>Review details before creating this automation.</div>
                   <div className="ui-card px-3 py-2">
                     <div className="font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-foreground">
-                      {cronDraft.name || t("agentSettings.cronComposer.untitled")}
+                      {cronDraft.name || "Untitled automation"}
                     </div>
                     <div className="mt-1 text-[11px]">
-                      {cronDraft.taskText || t("agentSettings.cronComposer.noTask")}
+                      {cronDraft.taskText || "No task provided."}
                     </div>
                     <div className="mt-2 text-[11px]">
-                      {t("agentSettings.cronComposer.schedule")}:{" "}
+                      Schedule:{" "}
                       {cronDraft.scheduleKind === "every"
                         ? `Every ${cronDraft.everyAmount ?? 0} ${cronDraft.everyUnit ?? "minutes"}${
                             cronDraft.everyUnit === "days"
@@ -1086,7 +1092,7 @@ export const AgentSettingsPanel = ({
             </div>
             <div className="flex items-center justify-between gap-2 border-t border-border/50 px-5 pb-4 pt-5">
               <div className="text-[11px] text-muted-foreground">
-                {timedAutomationStepMeta.indicator} · {t("agentSettings.cronComposer.stepOf").replace("{step}", String(cronCreateStep + 1)).replace("{total}", "4")}
+                {timedAutomationStepMeta.indicator} · Step {cronCreateStep + 1} of 4
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -1095,7 +1101,7 @@ export const AgentSettingsPanel = ({
                   onClick={moveCronCreateBack}
                   disabled={cronCreateStep === 0 || cronCreateBusy}
                 >
-                  {t("agentSettings.cronComposer.back")}
+                  Back
                 </button>
                 {cronCreateStep < 3 ? (
                   <button
@@ -1108,7 +1114,7 @@ export const AgentSettingsPanel = ({
                       (cronCreateStep === 2 && !canMoveToReviewStep)
                     }
                   >
-                    {t("agentSettings.cronComposer.next")}
+                    Next
                   </button>
                 ) : null}
                 {cronCreateStep === 3 ? (
@@ -1120,7 +1126,7 @@ export const AgentSettingsPanel = ({
                     }}
                     disabled={cronCreateBusy || !canSubmitCronCreate}
                   >
-                    {t("agentSettings.cronComposer.create")}
+                    Create automation
                   </button>
                 ) : null}
               </div>
